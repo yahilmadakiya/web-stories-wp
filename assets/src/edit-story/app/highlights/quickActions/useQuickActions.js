@@ -32,6 +32,7 @@ import {
   Link,
   Media,
   PictureSwap,
+  Captions,
 } from '../../../../design-system/icons';
 import updateProperties from '../../../components/inspector/design/updateProperties';
 import { useHistory } from '../../history';
@@ -174,6 +175,7 @@ const useQuickActions = () => {
     handleFocusPageBackground,
     handleFocusTextSetsPanel,
     handleFocusStylePanel,
+    handleFocusCaptionsPanel,
   } = useMemo(
     () => ({
       handleFocusAnimationPanel: handleFocusPanel(states.ANIMATION),
@@ -181,6 +183,7 @@ const useQuickActions = () => {
       handleFocusPageBackground: handleFocusPanel(states.PAGE_BACKGROUND),
       handleFocusTextSetsPanel: handleFocusPanel(states.TEXT),
       handleFocusStylePanel: handleFocusPanel(states.STYLE),
+      handleFocusCaptionsPanel: handleFocusPanel(states.CAPTIONS),
     }),
     [handleFocusPanel]
   );
@@ -230,11 +233,6 @@ const useQuickActions = () => {
   ]);
 
   const foregroundCommonActions = useMemo(() => {
-    const resetProperties = getResetProperties(
-      selectedElement,
-      selectedElementAnimations
-    );
-
     return [
       {
         Icon: CircleSpeed,
@@ -248,6 +246,23 @@ const useQuickActions = () => {
         onClick: handleFocusLinkPanel(selectedElement?.id),
         ...actionMenuProps,
       },
+    ];
+  }, [
+    selectedElement?.id,
+    // selectedElementAnimations,
+    handleFocusAnimationPanel,
+    actionMenuProps,
+    handleFocusLinkPanel,
+    // handleClearAnimationsAndFilters,
+    // selectedElements,
+  ]);
+
+  const appendedActions = useMemo(() => {
+    const resetProperties = getResetProperties(
+      selectedElement,
+      selectedElementAnimations
+    );
+    return [
       {
         Icon: Eraser,
         label: ACTION_TEXT.CLEAR_ANIMATIONS,
@@ -265,12 +280,10 @@ const useQuickActions = () => {
     ];
   }, [
     selectedElement,
-    selectedElementAnimations,
-    handleFocusAnimationPanel,
-    actionMenuProps,
-    handleFocusLinkPanel,
-    handleClearAnimationsAndFilters,
     selectedElements,
+    selectedElementAnimations,
+    handleClearAnimationsAndFilters,
+    actionMenuProps,
   ]);
 
   const foregroundImageActions = useMemo(
@@ -282,12 +295,14 @@ const useQuickActions = () => {
         ...actionMenuProps,
       },
       ...foregroundCommonActions,
+      ...appendedActions,
     ],
     [
       actionMenuProps,
       handleFocusMediaPanel,
       foregroundCommonActions,
       selectedElement?.id,
+      appendedActions,
     ]
   );
 
@@ -300,12 +315,14 @@ const useQuickActions = () => {
         ...actionMenuProps,
       },
       ...foregroundCommonActions,
+      ...appendedActions,
     ],
     [
       handleFocusStylePanel,
       foregroundCommonActions,
       actionMenuProps,
       selectedElement?.id,
+      appendedActions,
     ]
   );
 
@@ -351,6 +368,32 @@ const useQuickActions = () => {
     handleClearAnimationsAndFilters,
   ]);
 
+  const videoActions = useMemo(
+    () => [
+      {
+        Icon: PictureSwap,
+        label: ACTION_TEXT.REPLACE_MEDIA,
+        onClick: handleFocusMediaPanel(selectedElement?.id),
+        ...actionMenuProps,
+      },
+      ...foregroundCommonActions,
+      {
+        Icon: Captions,
+        label: ACTION_TEXT.ADD_CAPTIONS,
+        onClick: handleFocusCaptionsPanel(selectedElement?.id),
+        ...actionMenuProps,
+      },
+      ...appendedActions,
+    ],
+    [
+      handleFocusMediaPanel,
+      selectedElement?.id,
+      actionMenuProps,
+      foregroundCommonActions,
+      handleFocusCaptionsPanel,
+      appendedActions,
+    ]
+  );
   // Hide menu if there are multiple elements selected
   if (selectedElements.length > 1) {
     return [];
@@ -385,8 +428,9 @@ const useQuickActions = () => {
       return foregroundImageActions;
     case ELEMENT_TYPE.SHAPE:
       return shapeActions;
-    case ELEMENT_TYPE.TEXT:
     case ELEMENT_TYPE.VIDEO:
+      return videoActions;
+    case ELEMENT_TYPE.TEXT:
     default:
       return [];
   }
