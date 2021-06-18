@@ -77,6 +77,20 @@ class Story {
 	protected $poster_portrait;
 
 	/**
+	 * Poster srcset
+	 *
+	 * @var string
+	 */
+	protected $poster_srcset = '';
+
+	/**
+	 * Poster sizes
+	 *
+	 * @var string
+	 */
+	protected $poster_sizes = '';
+
+	/**
 	 * Date for the story.
 	 *
 	 * @var string
@@ -130,7 +144,17 @@ class Story {
 		$thumbnail_id = (int) get_post_thumbnail_id( $post );
 
 		if ( 0 !== $thumbnail_id ) {
-			$this->poster_portrait = (string) wp_get_attachment_image_url( $thumbnail_id, Media::POSTER_PORTRAIT_IMAGE_SIZE );
+			$image = wp_get_attachment_image_src( $thumbnail_id, Media::POSTER_PORTRAIT_IMAGE_SIZE );
+			if ( $image ) {
+				list( $src, $width, $height ) = $image;
+				$this->poster_portrait        = $src;
+				$image_meta                   = wp_get_attachment_metadata( $thumbnail_id );
+				if ( is_array( $image_meta ) ) {
+					$size_array          = [ absint( $width ), absint( $height ) ];
+					$this->poster_srcset = wp_calculate_image_srcset( $size_array, $src, $image_meta, $thumbnail_id );
+					$this->poster_sizes  = wp_calculate_image_sizes( $size_array, $src, $image_meta, $thumbnail_id );
+				}
+			}
 		}
 
 		return true;
@@ -214,6 +238,24 @@ class Story {
 	 */
 	public function get_date() {
 		return $this->date;
+	}
+
+	/**
+	 * Poster source sets.
+	 *
+	 * @return string
+	 */
+	public function get_poster_srcset() {
+		return $this->poster_srcset;
+	}
+
+	/**
+	 * Poster sizes.
+	 *
+	 * @return string
+	 */
+	public function get_poster_sizes() {
+		return $this->poster_sizes;
 	}
 
 }
