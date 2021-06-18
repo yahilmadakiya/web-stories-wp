@@ -150,9 +150,13 @@ class Story {
 				$this->poster_portrait        = $src;
 				$image_meta                   = wp_get_attachment_metadata( $thumbnail_id );
 				if ( is_array( $image_meta ) ) {
-					$size_array          = [ absint( $width ), absint( $height ) ];
-					$this->poster_srcset = wp_calculate_image_srcset( $size_array, $src, $image_meta, $thumbnail_id );
-					$this->poster_sizes  = wp_calculate_image_sizes( $size_array, $src, $image_meta, $thumbnail_id );
+					$size_array = [ absint( $width ), absint( $height ) ];
+					$srcset     = wp_calculate_image_srcset( $size_array, $src, $image_meta, $thumbnail_id );
+					$sizes      = wp_calculate_image_sizes( $size_array, $src, $image_meta, $thumbnail_id );
+					if ( $srcset && $sizes ) {
+						$this->poster_srcset = (string) $srcset;
+						$this->poster_sizes  = (string) $sizes;
+					}
 				}
 			}
 		}
