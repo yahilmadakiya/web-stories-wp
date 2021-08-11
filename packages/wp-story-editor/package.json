@@ -17,7 +17,8 @@
 		"@web-stories-wp/date": "*",
 		"@web-stories-wp/design-system": "*",
 		"@web-stories-wp/tracking": "*",
-		"@web-stories-wp/story-editor": "*"
+		"@web-stories-wp/story-editor": "*",
+		"@wordpress/api-fetch": "^5.2.1"
 	},
 	"devDependencies": {}
 }

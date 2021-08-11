@@ -42,24 +42,31 @@ import './style.css'; // This way the general editor styles are loaded before al
  * Initializes the web stories editor.
  *
  * @param {string} id       ID of the root element to render the screen in.
- * @param {Object} config   Story editor settings.
+ * @param {Object} settings   Story editor settings.
  * @param {Object} flags    The flags for the application.
  */
-const initialize = (id, config, flags) => {
+const initialize = (id, settings, flags) => {
   const appElement = document.getElementById(id);
 
   // see http://reactcommunity.org/react-modal/accessibility/
   setAppElement(appElement);
 
-  updateSettings(config.locale);
+  updateSettings(settings.locale);
 
   initializeTracking('Editor');
+
+  const storyEditorConfig = {};
 
   render(
     <FlagsProvider features={flags}>
       <StrictMode>
-        <StoryEditorProvider value={{}} settings={{}}>
-          <App config={config} />
+        <StoryEditorProvider
+          value={{}}
+          config={ storyEditorConfig }
+        >
+          <App
+            settings={ settings } { /* @todo Move this to StoryEditorProvider */ }
+          />
         </StoryEditorProvider>
       </StrictMode>
     </FlagsProvider>,
@@ -68,8 +75,8 @@ const initialize = (id, config, flags) => {
 };
 
 const initializeWithConfig = () => {
-  const { id, config, flags } = window.webStoriesEditorSettings;
-  initialize(id, config, flags);
+  const { id, config: settings, flags } = window.webStoriesEditorSettings;
+  initialize(id, settings, flags);
 };
 
 if ('loading' === document.readyState) {

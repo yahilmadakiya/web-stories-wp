@@ -52,13 +52,13 @@ import { GlobalStyle as CalendarStyle } from './components/form/dateTime/calenda
 import KeyboardOnlyOutlines from './utils/keyboardOnlyOutline';
 import { MetaBoxesProvider } from './integrations/wordpress/metaBoxes';
 
-function App({ config }) {
-  const { storyId, isRTL } = config;
+function App({ settings }) {
+  const { storyId, isRTL } = settings;
   return (
     <StyleSheetManager stylisPlugins={isRTL ? [stylisRTLPlugin] : []}>
       <ThemeProvider theme={theme}>
         <ErrorBoundary>
-          <ConfigProvider config={config}>
+          <ConfigProvider settings={settings}>
             <APIProvider>
               <StatusCheck />
               <FileProvider>
@@ -104,7 +104,7 @@ function App({ config }) {
 }
 
 App.propTypes = {
-  config: PropTypes.object.isRequired,
+  settings: PropTypes.object.isRequired,
 };
 
 export default App;

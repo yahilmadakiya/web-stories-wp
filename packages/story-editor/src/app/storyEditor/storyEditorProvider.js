@@ -23,12 +23,13 @@ import PropTypes from 'prop-types';
  */
 import Context from './context';
 
-function StoryEditorProvider({ children }) {
-  return <Context.Provider value={{}}>{children}</Context.Provider>;
+function StoryEditorProvider({ children, config }) {
+  return <Context.Provider value={{ config }}>{children}</Context.Provider>;
 }
 
 StoryEditorProvider.propTypes = {
   children: PropTypes.node,
+  config: PropTypes.object,
 };
 
 export default StoryEditorProvider;

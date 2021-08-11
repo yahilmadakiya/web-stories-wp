@@ -19,4 +19,4 @@
  */
 import { createContext } from '@web-stories-wp/react';
 
-export default createContext({ state: {}, actions: {} });
+export default createContext({ settings: {}, value: {} });

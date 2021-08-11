@@ -24,13 +24,14 @@ import PropTypes from 'prop-types';
  */
 import Context from './context';
 
-function ConfigProvider({ config, children }) {
-  return <Context.Provider value={config}>{children}</Context.Provider>;
+// @todo Refactor code to remove this component and use useStoryEditor from top level StoryEditorProvider.
+function ConfigProvider({ settings, children }) {
+  return <Context.Provider value={settings}>{children}</Context.Provider>;
 }
 
 ConfigProvider.propTypes = {
   children: PropTypes.node,
-  config: PropTypes.object.isRequired,
+  settings: PropTypes.object.isRequired,
 };
 
 export default ConfigProvider;
