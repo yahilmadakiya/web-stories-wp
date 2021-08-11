@@ -22,6 +22,7 @@ import App from './editorApp';
 export * from './components/transform';
 export * from './app/config';
 export * from './components/previewPage';
+export * from './app/storyEditor';
 
 export { default as base64Encode } from './utils/base64Encode';
 export { default as getStoryPropsToSave } from './app/story/utils/getStoryPropsToSave';
