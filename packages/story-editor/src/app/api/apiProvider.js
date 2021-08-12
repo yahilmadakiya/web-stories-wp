@@ -123,24 +123,31 @@ function APIProvider({ children }) {
     [cdnURL, assetsURL]
   );
 
+  // @todo Handle undefined actions in their components.
   actions.getStoryById = useCallback(
     (storyId) => getStoryById(stories, storyId),
     [stories, getStoryById]
   );
   actions.getStoryLockById = useCallback(
-    (storyId) => getStoryLockById(stories, storyId),
+    (storyId) =>
+      getStoryLockById ? getStoryLockById(stories, storyId) : undefined,
     [stories, getStoryLockById]
   );
   actions.setStoryLockById = useCallback(
-    (storyId) => setStoryLockById(stories, storyId),
+    (storyId) =>
+      setStoryLockById ? setStoryLockById(stories, storyId) : undefined,
     [stories, setStoryLockById]
   );
   actions.deleteStoryLockById = useCallback(
-    (storyId, nonce) => deleteStoryLockById(storyId, nonce, storyLocking),
+    (storyId, nonce) =>
+      deleteStoryLockById
+        ? deleteStoryLockById(storyId, nonce, storyLocking)
+        : undefined,
     [storyLocking, deleteStoryLockById]
   );
   actions.getDemoStoryById = useCallback(
-    (storyId) => getDemoStoryById(stories, storyId),
+    (storyId) =>
+      getDemoStoryById ? getDemoStoryById(stories, storyId) : undefined,
     [stories, getDemoStoryById]
   );
   actions.saveStoryById = useCallback(
@@ -185,11 +192,15 @@ function APIProvider({ children }) {
     [currentUser, updateCurrentUser]
   );
   actions.saveMetaBoxes = useCallback(
-    (story, formData) => saveMetaBoxes(metaBoxes, story, formData),
+    (story, formData) =>
+      saveMetaBoxes ? saveMetaBoxes(metaBoxes, story, formData) : undefined,
     [metaBoxes, saveMetaBoxes]
   );
   actions.getStatusCheck = useCallback(
-    (content) => getStatusCheck(content, statusCheck, encodeMarkup),
+    (content) =>
+      getStatusCheck
+        ? getStatusCheck(content, statusCheck, encodeMarkup)
+        : undefined,
     [statusCheck, encodeMarkup, getStatusCheck]
   );
   actions.getCustomPageTemplates = useCallback(
