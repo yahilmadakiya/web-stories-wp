@@ -17,14 +17,13 @@
 /**
  * Internal dependencies
  */
-import App from './editorApp';
+import { default as StoryEditor } from './editorApp';
 import PostLock from './components/postLock';
 import StatusCheck from './components/statusCheck';
 
 export * from './components/transform';
 export * from './app/config';
 export * from './components/previewPage';
-export * from './app/storyEditor';
 
 export { default as base64Encode } from './utils/base64Encode';
 export { default as getStoryPropsToSave } from './app/story/utils/getStoryPropsToSave';
@@ -37,4 +36,4 @@ export { GlobalStyle as CropMoveableGlobalStyle } from './components/moveable/cr
 export { ConfigProvider as EditorConfigProvider } from './app/config';
 
 export { PostLock, StatusCheck };
-export default App;
+export default StoryEditor;

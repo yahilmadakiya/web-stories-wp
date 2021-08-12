@@ -27,7 +27,6 @@ import getAllTemplates from '@web-stories-wp/templates';
  */
 import base64Encode from '../../utils/base64Encode';
 import { useConfig } from '../config';
-import { useStoryEditor } from '../storyEditor';
 import Context from './context';
 import { removeImagesFromPageTemplates } from './utils';
 
@@ -44,11 +43,6 @@ function APIProvider({ children }) {
       storyLocking,
       pageTemplates: customPageTemplates,
     },
-    encodeMarkup,
-    cdnURL,
-    assetsURL,
-  } = useConfig();
-  const {
     config: {
       getStoryById,
       getStoryLockById,
@@ -71,7 +65,10 @@ function APIProvider({ children }) {
       addPageTemplate,
       deletePageTemplate,
     },
-  } = useStoryEditor();
+    encodeMarkup,
+    cdnURL,
+    assetsURL,
+  } = useConfig();
 
   const pageTemplates = useRef({
     base: [],

@@ -25,7 +25,7 @@ import './publicPath';
 /**
  * External dependencies
  */
-import App, { StoryEditorProvider } from '@web-stories-wp/story-editor';
+import StoryEditor from '@web-stories-wp/story-editor';
 import { setAppElement } from '@web-stories-wp/design-system';
 import { StrictMode } from 'react';
 import { render } from 'react-dom';
@@ -62,9 +62,7 @@ const initialize = (id, settings, flags) => {
   render(
     <FlagsProvider features={flags}>
       <StrictMode>
-        <StoryEditorProvider config={storyEditorConfig}>
-          <App settings={settings} />
-        </StoryEditorProvider>
+        <StoryEditor settings={settings} config={storyEditorConfig} />
       </StrictMode>
     </FlagsProvider>,
     appElement
