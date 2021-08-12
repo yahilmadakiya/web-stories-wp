@@ -42,8 +42,6 @@ import AutoSaveHandler from './components/autoSaveHandler';
 import { TransformProvider } from './components/transform';
 import { DropTargetsProvider } from './components/dropTargets';
 import { HelpCenterProvider } from './app/helpCenter';
-import StatusCheck from './components/statusCheck';
-import PostLock from './components/postLock';
 import Layout from './components/layout';
 import DevTools from './components/devTools';
 import { GlobalStyle as DefaultMoveableGlobalStyle } from './components/moveable/moveStyle';
@@ -52,7 +50,7 @@ import { GlobalStyle as CalendarStyle } from './components/form/dateTime/calenda
 import KeyboardOnlyOutlines from './utils/keyboardOnlyOutline';
 import { MetaBoxesProvider } from './integrations/wordpress/metaBoxes';
 
-function App({ settings, config }) {
+function App({ settings, config, children }) {
   const { storyId, isRTL } = settings;
   return (
     <StyleSheetManager stylisPlugins={isRTL ? [stylisRTLPlugin] : []}>
@@ -60,7 +58,6 @@ function App({ settings, config }) {
         <ErrorBoundary>
           <ConfigProvider settings={settings} config={config}>
             <APIProvider>
-              <StatusCheck />
               <FileProvider>
                 <Media3pApiProvider>
                   <HistoryProvider size={50}>
@@ -68,7 +65,6 @@ function App({ settings, config }) {
                       <MetaBoxesProvider>
                         <StoryProvider storyId={storyId}>
                           <CurrentUserProvider>
-                            <PostLock />
                             <FontProvider>
                               <MediaProvider>
                                 <AutoSaveHandler />
@@ -83,6 +79,7 @@ function App({ settings, config }) {
                                       <CalendarStyle />
                                       <KeyboardOnlyOutlines />
                                       <Layout />
+                                      {children}
                                     </HelpCenterProvider>
                                   </DropTargetsProvider>
                                 </TransformProvider>
@@ -106,6 +103,7 @@ function App({ settings, config }) {
 App.propTypes = {
   settings: PropTypes.object.isRequired,
   config: PropTypes.object.isRequired,
+  children: PropTypes.node,
 };
 
 export default App;

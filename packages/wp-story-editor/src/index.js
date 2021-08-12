@@ -25,7 +25,10 @@ import './publicPath';
 /**
  * External dependencies
  */
-import StoryEditor from '@web-stories-wp/story-editor';
+import StoryEditor, {
+  PostLock,
+  StatusCheck,
+} from '@web-stories-wp/story-editor';
 import { setAppElement } from '@web-stories-wp/design-system';
 import { StrictMode } from 'react';
 import { render } from 'react-dom';
@@ -56,13 +59,13 @@ const initialize = (id, settings, flags) => {
 
   initializeTracking('Editor');
 
-  // StoryEditorProvider can pass data/settings
-  // App can pass anything other than data for example callbacks.
-  // @todo Move settings={ settings } to StoryEditorProvider component.
   render(
     <FlagsProvider features={flags}>
       <StrictMode>
-        <StoryEditor settings={settings} config={storyEditorConfig} />
+        <StoryEditor settings={settings} config={storyEditorConfig}>
+          <PostLock />
+          <StatusCheck />
+        </StoryEditor>
       </StrictMode>
     </FlagsProvider>,
     appElement
