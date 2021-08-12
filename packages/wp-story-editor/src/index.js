@@ -62,13 +62,8 @@ const initialize = (id, settings, flags) => {
   render(
     <FlagsProvider features={flags}>
       <StrictMode>
-        <StoryEditorProvider
-          value={{}}
-        >
-          <App
-            settings={ settings }
-            config={ storyEditorConfig }
-          />
+        <StoryEditorProvider config={storyEditorConfig}>
+          <App settings={settings} />
         </StoryEditorProvider>
       </StrictMode>
     </FlagsProvider>,

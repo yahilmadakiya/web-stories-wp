@@ -27,10 +27,11 @@ import getAllTemplates from '@web-stories-wp/templates';
  */
 import base64Encode from '../../utils/base64Encode';
 import { useConfig } from '../config';
+import { useStoryEditor } from '../storyEditor';
 import Context from './context';
 import { removeImagesFromPageTemplates } from './utils';
 
-function APIProvider({ children, config }) {
+function APIProvider({ children }) {
   const {
     api: {
       stories,
@@ -47,6 +48,30 @@ function APIProvider({ children, config }) {
     cdnURL,
     assetsURL,
   } = useConfig();
+  const {
+    config: {
+      getStoryById,
+      getStoryLockById,
+      setStoryLockById,
+      deleteStoryLockById,
+      getDemoStoryById,
+      saveStoryById,
+      autoSaveById,
+      getMedia,
+      uploadMedia,
+      updateMedia,
+      deleteMedia,
+      getLinkMetadata,
+      getAuthors,
+      getCurrentUser,
+      updateCurrentUser,
+      saveMetaBoxes,
+      getStatusCheck,
+      getCustomPageTemplates,
+      addPageTemplate,
+      deletePageTemplate,
+    },
+  } = useStoryEditor();
 
   const pageTemplates = useRef({
     base: [],
@@ -55,17 +80,17 @@ function APIProvider({ children, config }) {
 
   const getStorySaveData = useCallback(
     ({
-       pages,
-       featuredMedia,
-       globalStoryStyles,
-       publisherLogo,
-       autoAdvance,
-       defaultPageDuration,
-       currentStoryStyles,
-       content,
-       author,
-       ...rest
-     }) => ({
+      pages,
+      featuredMedia,
+      globalStoryStyles,
+      publisherLogo,
+      autoAdvance,
+      defaultPageDuration,
+      currentStoryStyles,
+      content,
+      author,
+      ...rest
+    }) => ({
       story_data: {
         version: DATA_VERSION,
         pages,
@@ -83,7 +108,9 @@ function APIProvider({ children, config }) {
     [encodeMarkup]
   );
 
-  const getPageTemplates = useCallback(
+  const actions = {};
+
+  actions.getPageTemplates = useCallback(
     async ({ showImages = false } = {}) => {
       // check if pageTemplates have been loaded yet
       if (pageTemplates.current.base.length === 0) {
@@ -99,59 +126,93 @@ function APIProvider({ children, config }) {
     [cdnURL, assetsURL]
   );
 
-  const getStoryById = useCallback( (storyId) => config.getStoryById( stories, storyId ), [stories] );
-  const getStoryLockById = useCallback( (storyId) => config.getStoryLockById( stories, storyId ), [stories] );
-  const setStoryLockById = useCallback( (storyId) => config.setStoryLockById( stories, storyId ), [stories] );
-  const deleteStoryLockById = useCallback( (storyId, nonce) => config.deleteStoryLockById( storyId, nonce, storyLocking ), [storyLocking] );
-  const getDemoStoryById = useCallback( (storyId) => config.getDemoStoryById( stories, storyId ), [stories] );
-  const saveStoryById = useCallback( (story) => config.saveStoryById( story, stories, getStorySaveData ), [stories, getStorySaveData] );
-  const autoSaveById = useCallback( (story) => config.autoSaveById( stories, story, getStorySaveData ), [stories, getStorySaveData] );
-  const getMedia = useCallback( ({ mediaType, searchTerm, pagingNum, cacheBust }) => config.getMedia( media, { mediaType, searchTerm, pagingNum, cacheBust } ), [media] );
-  const uploadMedia = useCallback( (file, additionalData) => config.uploadMedia( media, file, additionalData ), [media] );
-  const updateMedia = useCallback( (mediaId, data) => config.updateMedia( media, mediaId, data ), [media] );
-  const deleteMedia = useCallback( (mediaId) => config.deleteMedia( media, mediaId ), [media] );
-  const getLinkMetadata = useCallback( (url) => config.getLinkMetadata( url, link ), [link] );
-  const getAuthors = useCallback( (search = null) => config.getAuthors( search, users ), [users] );
-  const getCurrentUser = useCallback( () => config.getCurrentUser( currentUser ), [currentUser] );
-  const updateCurrentUser = useCallback( ( data ) => config.updateCurrentUser( data, currentUser ), [currentUser] );
-  const saveMetaBoxes = useCallback( ( story, formData ) => config.saveMetaBoxes( metaboxes, story, formData ), [metaBoxes] );
-  const getStatusCheck = useCallback( ( content ) => config.getStatusCheck( content, statusCheck, encodeMarkup ), [statusCheck, encodeMarkup] );
-  const getCustomPageTemplates = useCallback( (page = 1) => config.getCustomPageTemplates( page, customPageTemplates ), [customPageTemplates] );
-  const addPageTemplate = useCallback( (page) => config.addPageTemplate( page, customPageTemplates ), [customPageTemplates] );
-  const deletePageTemplate = useCallback( (id) => config.deletePageTemplate( id, customPageTemplates ), [customPageTemplates] );
+  actions.getStoryById = useCallback(
+    (storyId) => getStoryById(stories, storyId),
+    [stories, getStoryById]
+  );
+  actions.getStoryLockById = useCallback(
+    (storyId) => getStoryLockById(stories, storyId),
+    [stories, getStoryLockById]
+  );
+  actions.setStoryLockById = useCallback(
+    (storyId) => setStoryLockById(stories, storyId),
+    [stories, setStoryLockById]
+  );
+  actions.deleteStoryLockById = useCallback(
+    (storyId, nonce) => deleteStoryLockById(storyId, nonce, storyLocking),
+    [storyLocking, deleteStoryLockById]
+  );
+  actions.getDemoStoryById = useCallback(
+    (storyId) => getDemoStoryById(stories, storyId),
+    [stories, getDemoStoryById]
+  );
+  actions.saveStoryById = useCallback(
+    (story) => saveStoryById(story, stories, getStorySaveData),
+    [stories, getStorySaveData, saveStoryById]
+  );
+  actions.autoSaveById = useCallback(
+    (story) => autoSaveById(stories, story, getStorySaveData),
+    [stories, getStorySaveData, autoSaveById]
+  );
+  actions.getMedia = useCallback(
+    ({ mediaType, searchTerm, pagingNum, cacheBust }) =>
+      getMedia(media, { mediaType, searchTerm, pagingNum, cacheBust }),
+    [media, getMedia]
+  );
+  actions.uploadMedia = useCallback(
+    (file, additionalData) => uploadMedia(media, file, additionalData),
+    [media, uploadMedia]
+  );
+  actions.updateMedia = useCallback(
+    (mediaId, data) => updateMedia(media, mediaId, data),
+    [media, updateMedia]
+  );
+  actions.deleteMedia = useCallback(
+    (mediaId) => deleteMedia(media, mediaId),
+    [media, deleteMedia]
+  );
+  actions.getLinkMetadata = useCallback(
+    (url) => getLinkMetadata(url, link),
+    [link, getLinkMetadata]
+  );
+  actions.getAuthors = useCallback(
+    (search = null) => getAuthors(search, users),
+    [users, getAuthors]
+  );
+  actions.getCurrentUser = useCallback(
+    () => getCurrentUser(currentUser),
+    [currentUser, getCurrentUser]
+  );
+  actions.updateCurrentUser = useCallback(
+    (data) => updateCurrentUser(data, currentUser),
+    [currentUser, updateCurrentUser]
+  );
+  actions.saveMetaBoxes = useCallback(
+    (story, formData) => saveMetaBoxes(metaBoxes, story, formData),
+    [metaBoxes, saveMetaBoxes]
+  );
+  actions.getStatusCheck = useCallback(
+    (content) => getStatusCheck(content, statusCheck, encodeMarkup),
+    [statusCheck, encodeMarkup, getStatusCheck]
+  );
+  actions.getCustomPageTemplates = useCallback(
+    (page = 1) => getCustomPageTemplates(page, customPageTemplates),
+    [customPageTemplates, getCustomPageTemplates]
+  );
+  actions.addPageTemplate = useCallback(
+    (page) => addPageTemplate(page, customPageTemplates),
+    [customPageTemplates, addPageTemplate]
+  );
+  actions.deletePageTemplate = useCallback(
+    (id) => deletePageTemplate(id, customPageTemplates),
+    [customPageTemplates, deletePageTemplate]
+  );
 
-  const state = {
-    actions: {
-      autoSaveById,
-      getStoryById,
-      getDemoStoryById,
-      getStoryLockById,
-      setStoryLockById,
-      deleteStoryLockById,
-      getMedia,
-      getLinkMetadata,
-      saveStoryById,
-      getAuthors,
-      uploadMedia,
-      updateMedia,
-      deleteMedia,
-      saveMetaBoxes,
-      getStatusCheck,
-      addPageTemplate,
-      getCustomPageTemplates,
-      deletePageTemplate,
-      getPageTemplates,
-      getCurrentUser,
-      updateCurrentUser,
-    },
-  };
-
-  return <Context.Provider value={state}>{children}</Context.Provider>;
+  return <Context.Provider value={{ actions }}>{children}</Context.Provider>;
 }
 
 APIProvider.propTypes = {
   children: PropTypes.node,
-  config: PropTypes.object,
 };
 
 export default APIProvider;
