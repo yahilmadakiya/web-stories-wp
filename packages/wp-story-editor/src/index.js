@@ -36,6 +36,7 @@ import { initializeTracking } from '@web-stories-wp/tracking';
 /**
  * Internal dependencies
  */
+import * as storyEditorConfig from './api';
 import './style.css'; // This way the general editor styles are loaded before all the component styles.
 
 /**
@@ -55,17 +56,18 @@ const initialize = (id, settings, flags) => {
 
   initializeTracking('Editor');
 
-  const storyEditorConfig = {};
-
+  // StoryEditorProvider can pass data/settings
+  // App can pass anything other than data for example callbacks.
+  // @todo Move settings={ settings } to StoryEditorProvider component.
   render(
     <FlagsProvider features={flags}>
       <StrictMode>
         <StoryEditorProvider
           value={{}}
-          config={ storyEditorConfig }
         >
           <App
-            settings={ settings } { /* @todo Move settings to StoryEditorProvider */ }
+            settings={ settings }
+            config={ storyEditorConfig }
           />
         </StoryEditorProvider>
       </StrictMode>
