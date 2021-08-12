@@ -65,7 +65,7 @@ const initialize = (id, settings, flags) => {
           config={ storyEditorConfig }
         >
           <App
-            settings={ settings } { /* @todo Move this to StoryEditorProvider */ }
+            settings={ settings } { /* @todo Move settings to StoryEditorProvider */ }
           />
         </StoryEditorProvider>
       </StrictMode>
