@@ -60,10 +60,12 @@ function MediaInput(
   forwardedRef
 ) {
   const {
-    config: { openFormMediaPicker },
+    config: {
+      mediaPickers: { form: formMediaPicker },
+    },
   } = useConfig();
 
-  const openMediaPicker = openFormMediaPicker({
+  const formButtonProps = formMediaPicker({
     title,
     buttonInsertText,
     onSelect: onChange,
@@ -71,6 +73,10 @@ function MediaInput(
     type,
     cropParams,
   });
+
+  // @todo Refactor code to use onClick for consistency ?
+  formButtonProps.openMediaPicker = formButtonProps.onClick;
+  delete formButtonProps.onClick;
 
   // Options available for the media input menu.
   const availableMenuOptions = [
@@ -92,7 +98,7 @@ function MediaInput(
     (evt, opt) => {
       switch (opt) {
         case 'edit':
-          openMediaPicker(evt);
+          formButtonProps.openMediaPicker(evt);
           break;
         case 'remove':
         case 'reset':
@@ -102,17 +108,17 @@ function MediaInput(
           break;
       }
     },
-    [onChange, openMediaPicker]
+    [onChange, formButtonProps]
   );
 
   return (
     <StyledInput
       onMenuOption={onOption}
       menuOptions={dropdownOptions}
-      openMediaPicker={openMediaPicker}
       ref={forwardedRef}
       value={value === MULTIPLE_VALUE ? null : value}
       {...rest}
+      {...formButtonProps}
     />
   );
 }

@@ -25,7 +25,7 @@ import { v4 as uuidv4 } from 'uuid';
  */
 import { useMediaPicker } from '../useMediaPicker';
 
-const useOpenCaptionMediaPicker = ({ pushUpdate, tracks }) => {
+const useCaptionMediaPicker = ({ pushUpdate, tracks }) => {
   const captionText = __('Upload a file', 'web-stories');
 
   const handleChangeTrack = useCallback(
@@ -45,7 +45,7 @@ const useOpenCaptionMediaPicker = ({ pushUpdate, tracks }) => {
     [tracks, pushUpdate]
   );
 
-  return useMediaPicker({
+  const openMediaPicker = useMediaPicker({
     onSelect: handleChangeTrack,
     onSelectErrorMessage: __(
       'Please choose a VTT file to use as caption.',
@@ -55,6 +55,10 @@ const useOpenCaptionMediaPicker = ({ pushUpdate, tracks }) => {
     title: captionText,
     buttonInsertText: __('Select caption', 'web-stories'),
   });
+
+  return {
+    onClick: openMediaPicker,
+  };
 };
 
-export default useOpenCaptionMediaPicker;
+export default useCaptionMediaPicker;

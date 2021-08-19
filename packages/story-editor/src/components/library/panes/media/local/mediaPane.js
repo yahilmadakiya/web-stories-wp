@@ -153,7 +153,9 @@ function MediaPane(props) {
       video: allowedVideoMimeTypes,
     },
     capabilities: { hasUploadMediaAction },
-    config: { openLibraryMediaPicker },
+    config: {
+      mediaPickers: { library: libraryMediaPicker },
+    },
   } = useConfig();
 
   const { isTranscodingEnabled } = useFFmpeg();
@@ -225,7 +227,7 @@ function MediaPane(props) {
     }
   };
 
-  const openMediaPicker = openLibraryMediaPicker({
+  const mediaButtonProps = libraryMediaPicker({
     optimizeVideo,
     isTranscodingEnabled,
     transcodableMimeTypes,
@@ -290,7 +292,7 @@ function MediaPane(props) {
                 variant={BUTTON_VARIANTS.RECTANGLE}
                 type={BUTTON_TYPES.SECONDARY}
                 size={BUTTON_SIZES.SMALL}
-                onClick={openMediaPicker}
+                {...mediaButtonProps}
               >
                 {__('Upload', 'web-stories')}
               </Button>

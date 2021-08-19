@@ -18,7 +18,7 @@
  */
 import { useMediaPicker } from '../useMediaPicker';
 
-const useOpenFormMediaPicker = ({
+const useFormMediaPicker = ({
   title,
   buttonInsertText,
   onSelect,
@@ -26,7 +26,7 @@ const useOpenFormMediaPicker = ({
   type,
   cropParams,
 }) => {
-  return useMediaPicker({
+  const openMediaPicker = useMediaPicker({
     title,
     buttonInsertText,
     onSelect,
@@ -34,6 +34,10 @@ const useOpenFormMediaPicker = ({
     type,
     cropParams,
   });
+
+  return {
+    onClick: openMediaPicker,
+  };
 };
 
-export default useOpenFormMediaPicker;
+export default useFormMediaPicker;

@@ -41,9 +41,9 @@ import { initializeTracking } from '@web-stories-wp/tracking';
  */
 import * as apiConfig from './api';
 import {
-  useOpenFormMediaPicker,
-  useOpenCaptionMediaPicker,
-  useOpenLibraryMediaPicker,
+  useFormMediaPicker,
+  useCaptionMediaPicker,
+  useLibraryMediaPicker,
 } from './media';
 import './style.css'; // This way the general editor styles are loaded before all the component styles.
 
@@ -64,11 +64,14 @@ const initialize = (id, settings, flags) => {
 
   initializeTracking('Editor');
 
+  // @todo Use more descriptive key names for mediaPickers.
   const config = {
     ...apiConfig,
-    openCaptionMediaPicker: useOpenCaptionMediaPicker,
-    openLibraryMediaPicker: useOpenLibraryMediaPicker,
-    openFormMediaPicker: useOpenFormMediaPicker,
+    mediaPickers: {
+      caption: useCaptionMediaPicker,
+      library: useLibraryMediaPicker,
+      form: useFormMediaPicker,
+    },
   };
 
   render(

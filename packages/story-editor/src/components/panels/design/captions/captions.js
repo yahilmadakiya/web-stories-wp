@@ -96,7 +96,9 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
   using native browser upload. */
   const uploadError = false;
   const {
-    config: { openCaptionMediaPicker },
+    config: {
+      mediaPickers: { caption: captionMediaPicker },
+    },
   } = useConfig();
 
   usePresubmitHandler(
@@ -124,7 +126,7 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
     [tracks, pushUpdate]
   );
 
-  const UploadCaption = openCaptionMediaPicker({ pushUpdate, tracks });
+  const uploadButtonProps = captionMediaPicker({ pushUpdate, tracks });
 
   const buttonRef = useRef();
   const highlight = useFocusHighlight(states.CAPTIONS, buttonRef);
@@ -179,10 +181,10 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
             <UploadButton
               css={highlight?.showEffect && styles.OUTLINE}
               ref={buttonRef}
-              onClick={UploadCaption}
               type={BUTTON_TYPES.SECONDARY}
               size={BUTTON_SIZES.SMALL}
               variant={BUTTON_VARIANTS.RECTANGLE}
+              {...uploadButtonProps}
             >
               {captionText}
             </UploadButton>

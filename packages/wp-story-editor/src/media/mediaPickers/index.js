@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { default as useOpenCaptionMediaPicker } from './caption';
-export { default as useOpenLibraryMediaPicker } from './library';
-export { default as useOpenFormMediaPicker } from './form';
+export { default as useCaptionMediaPicker } from './caption';
+export { default as useLibraryMediaPicker } from './library';
+export { default as useFormMediaPicker } from './form';

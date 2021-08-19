@@ -25,7 +25,7 @@ import { __, sprintf, translateToExclusiveList } from '@web-stories-wp/i18n';
  */
 import { useMediaPicker } from '../useMediaPicker';
 
-const useOpenLibraryMediaPicker = ({
+const useLibraryMediaPicker = ({
   optimizeVideo,
   isTranscodingEnabled,
   transcodableMimeTypes,
@@ -104,13 +104,17 @@ const useOpenLibraryMediaPicker = ({
     );
   }
 
-  return useMediaPicker({
+  const openMediaPicker = useMediaPicker({
     onSelect,
     onSelectErrorMessage,
     onClose,
     type: allowedMimeTypes,
     onPermissionError: () => setIsPermissionDialogOpen(true),
   });
+
+  return {
+    onClick: openMediaPicker,
+  };
 };
 
-export default useOpenLibraryMediaPicker;
+export default useLibraryMediaPicker;
