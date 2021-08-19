@@ -18,7 +18,11 @@
 		"@web-stories-wp/design-system": "*",
 		"@web-stories-wp/tracking": "*",
 		"@web-stories-wp/story-editor": "*",
-		"@wordpress/api-fetch": "^5.2.1"
+		"@web-stories-wp/i18n": "*",
+		"@wordpress/api-fetch": "^5.2.1",
+		"uuid": "^8.3.2"
 	},
-	"devDependencies": {}
+	"devDependencies": {
+		"@testing-library/react-hooks": "^7.0.1"
+	}
 }

@@ -39,7 +39,12 @@ import { initializeTracking } from '@web-stories-wp/tracking';
 /**
  * Internal dependencies
  */
-import * as storyEditorConfig from './api';
+import * as apiConfig from './api';
+import {
+  useOpenFormMediaPicker,
+  useOpenCaptionMediaPicker,
+  useOpenLibraryMediaPicker,
+} from './media/mediaPicker';
 import './style.css'; // This way the general editor styles are loaded before all the component styles.
 
 /**
@@ -59,10 +64,17 @@ const initialize = (id, settings, flags) => {
 
   initializeTracking('Editor');
 
+  const config = {
+    ...apiConfig,
+    openCaptionMediaPicker: useOpenCaptionMediaPicker,
+    openLibraryMediaPicker: useOpenLibraryMediaPicker,
+    openFormMediaPicker: useOpenFormMediaPicker,
+  };
+
   render(
     <FlagsProvider features={flags}>
       <StrictMode>
-        <StoryEditor settings={settings} config={storyEditorConfig}>
+        <StoryEditor settings={settings} config={config}>
           <PostLock />
           <StatusCheck />
         </StoryEditor>

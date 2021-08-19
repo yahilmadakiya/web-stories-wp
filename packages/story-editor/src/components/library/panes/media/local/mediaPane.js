@@ -20,12 +20,7 @@
 import { useFeature } from 'flagged';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import {
-  __,
-  _n,
-  sprintf,
-  translateToExclusiveList,
-} from '@web-stories-wp/i18n';
+import { __, _n, sprintf } from '@web-stories-wp/i18n';
 import { trackEvent } from '@web-stories-wp/tracking';
 import { resourceList } from '@web-stories-wp/media';
 import {
@@ -35,7 +30,6 @@ import {
   BUTTON_VARIANTS,
   Text,
   THEME_CONSTANTS,
-  useSnackbar,
 } from '@web-stories-wp/design-system';
 
 /**
@@ -43,11 +37,9 @@ import {
  */
 import { useConfig } from '../../../../../app/config';
 import { useLocalMedia } from '../../../../../app/media';
-import { useMediaPicker } from '../../../../mediaPicker';
 import { SearchInput } from '../../../common';
 import useLibrary from '../../../useLibrary';
 import { Select } from '../../../../form';
-import { getResourceFromMediaPicker } from '../../../../../app/media/utils';
 import {
   MediaGalleryMessage,
   PaneHeader,
@@ -153,8 +145,6 @@ function MediaPane(props) {
     }
   );
 
-  const { showSnackbar } = useSnackbar();
-
   const {
     allowedTranscodableMimeTypes,
     allowedFileTypes,
@@ -163,6 +153,7 @@ function MediaPane(props) {
       video: allowedVideoMimeTypes,
     },
     capabilities: { hasUploadMediaAction },
+    config: { openLibraryMediaPicker },
   } = useConfig();
 
   const { isTranscodingEnabled } = useFFmpeg();
@@ -196,77 +187,6 @@ function MediaPane(props) {
   const [isPermissionDialogOpen, setIsPermissionDialogOpen] = useState(false);
 
   const isSearching = searchTerm.length > 0;
-
-  const onClose = resetWithFetch;
-
-  /**
-   * Callback of select in media picker to insert media element.
-   *
-   * @param {Object} mediaPickerEl Object coming from backbone media picker.
-   */
-  const onSelect = (mediaPickerEl) => {
-    const resource = getResourceFromMediaPicker(mediaPickerEl);
-    try {
-      if (isTranscodingEnabled) {
-        if (transcodableMimeTypes.includes(resource.mimeType)) {
-          optimizeVideo({ resource });
-        }
-
-        if (resource.mimeType === 'image/gif') {
-          optimizeGif({ resource });
-        }
-      }
-      // WordPress media picker event, sizes.medium.url is the smallest image
-      insertMediaElement(
-        resource,
-        mediaPickerEl.sizes?.medium?.url || mediaPickerEl.url
-      );
-
-      if (
-        !resource.posterId &&
-        !resource.local &&
-        (allowedVideoMimeTypes.includes(resource.mimeType) ||
-          resource.type === 'gif')
-      ) {
-        // Upload video poster and update media element afterwards, so that the
-        // poster will correctly show up in places like the Accessibility panel.
-        uploadVideoPoster(resource.id, mediaPickerEl.url);
-      }
-
-      if (
-        !resource.local &&
-        allowedVideoMimeTypes.includes(resource.mimeType) &&
-        !resource.isMuted
-      ) {
-        updateVideoIsMuted(resource.id, resource.src);
-      }
-    } catch (e) {
-      showSnackbar({
-        message: e.message,
-        dismissable: true,
-      });
-    }
-  };
-
-  let onSelectErrorMessage = __(
-    'No file types are currently supported.',
-    'web-stories'
-  );
-  if (allowedFileTypes.length) {
-    onSelectErrorMessage = sprintf(
-      /* translators: %s: list of allowed file types. */
-      __('Please choose only %s to insert into page.', 'web-stories'),
-      translateToExclusiveList(allowedFileTypes)
-    );
-  }
-
-  const openMediaPicker = useMediaPicker({
-    onSelect,
-    onSelectErrorMessage,
-    onClose,
-    type: allowedMimeTypes,
-    onPermissionError: () => setIsPermissionDialogOpen(true),
-  });
 
   /**
    * Filter REST API calls and re-request API.
@@ -304,6 +224,21 @@ function MediaPane(props) {
       setSearchTerm({ searchTerm: trimText });
     }
   };
+
+  const openMediaPicker = openLibraryMediaPicker({
+    optimizeVideo,
+    isTranscodingEnabled,
+    transcodableMimeTypes,
+    optimizeGif,
+    insertMediaElement,
+    allowedVideoMimeTypes,
+    uploadVideoPoster,
+    updateVideoIsMuted,
+    allowedFileTypes,
+    allowedMimeTypes,
+    resetWithFetch,
+    setIsPermissionDialogOpen,
+  });
 
   useEffect(() => {
     trackEvent('search', {

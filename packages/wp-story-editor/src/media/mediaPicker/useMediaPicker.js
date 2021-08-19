@@ -21,12 +21,11 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { __ } from '@web-stories-wp/i18n';
 import { trackEvent } from '@web-stories-wp/tracking';
 import { useSnackbar } from '@web-stories-wp/design-system';
+import { useConfig, useAPI } from '@web-stories-wp/story-editor';
 
 /**
  * Internal dependencies
  */
-import { useConfig } from '../../app/config';
-import { useAPI } from '../../app/api';
 import { calculateImageSelectOptions, mustBeCropped } from './utils';
 
 const defaultCropParams = {

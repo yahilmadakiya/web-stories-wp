@@ -19,10 +19,11 @@
  */
 import { act, renderHook } from '@testing-library/react-hooks';
 import { SnackbarContext } from '@web-stories-wp/design-system';
+import { ConfigProvider } from '@web-stories-wp/story-editor';
+
 /**
  * Internal dependencies
  */
-import ConfigContext from '../../../app/config/context';
 import useMediaPicker from '../useMediaPicker';
 
 jest.mock('@web-stories-wp/design-system', () => ({
@@ -43,9 +44,9 @@ function setup({ args, cropParams }) {
   };
 
   const wrapper = ({ children }) => (
-    <ConfigContext.Provider value={configValue}>
+    <ConfigProvider config={configValue} settings={{}}>
       <SnackbarContext.Provider>{children}</SnackbarContext.Provider>
-    </ConfigContext.Provider>
+    </ConfigProvider>
   );
   const onSelect = jest.fn();
   const onClose = jest.fn();

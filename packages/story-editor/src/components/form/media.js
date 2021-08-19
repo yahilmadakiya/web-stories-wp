@@ -29,8 +29,8 @@ import {
 /**
  * Internal dependencies
  */
-import { useMediaPicker } from '../mediaPicker';
 import { MULTIPLE_VALUE } from '../../constants';
+import { useConfig } from '../../app';
 
 const StyledInput = styled(Input)`
   button:focus {
@@ -59,7 +59,11 @@ function MediaInput(
   },
   forwardedRef
 ) {
-  const openMediaPicker = useMediaPicker({
+  const {
+    config: { openFormMediaPicker },
+  } = useConfig();
+
+  const openMediaPicker = openFormMediaPicker({
     title,
     buttonInsertText,
     onSelect: onChange,

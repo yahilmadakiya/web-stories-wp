@@ -19,7 +19,6 @@
  */
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
-import { v4 as uuidv4 } from 'uuid';
 import { useCallback, useRef } from 'react';
 import { __ } from '@web-stories-wp/i18n';
 import {
@@ -39,11 +38,11 @@ import {
  */
 import { MULTIPLE_VALUE, MULTIPLE_DISPLAY_VALUE } from '../../../../constants';
 import { Row, usePresubmitHandler } from '../../../form';
-import { useMediaPicker } from '../../../mediaPicker';
 import { SimplePanel } from '../../panel';
 import { focusStyle, getCommonValue } from '../../shared';
 import { states, styles, useFocusHighlight } from '../../../../app/highlights';
 import Tooltip from '../../../tooltip';
+import { useConfig } from '../../../../app';
 
 const InputRow = styled.div`
   display: flex;
@@ -96,6 +95,9 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
   /* @TODO: Implement error handling after removing modal and
   using native browser upload. */
   const uploadError = false;
+  const {
+    config: { openCaptionMediaPicker },
+  } = useConfig();
 
   usePresubmitHandler(
     ({ resource: newResource }) => ({
@@ -122,33 +124,7 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
     [tracks, pushUpdate]
   );
 
-  const handleChangeTrack = useCallback(
-    (attachment) => {
-      const newTracks = {
-        track: attachment?.url,
-        trackId: attachment?.id,
-        trackName: attachment?.filename,
-        id: uuidv4(),
-        kind: 'captions',
-        srclang: '',
-        label: '',
-      };
-
-      pushUpdate({ tracks: [...tracks, newTracks] }, true);
-    },
-    [tracks, pushUpdate]
-  );
-
-  const UploadCaption = useMediaPicker({
-    onSelect: handleChangeTrack,
-    onSelectErrorMessage: __(
-      'Please choose a VTT file to use as caption.',
-      'web-stories'
-    ),
-    type: ['text/vtt'],
-    title: captionText,
-    buttonInsertText: __('Select caption', 'web-stories'),
-  });
+  const UploadCaption = openCaptionMediaPicker({ pushUpdate, tracks });
 
   const buttonRef = useRef();
   const highlight = useFocusHighlight(states.CAPTIONS, buttonRef);

@@ -23,12 +23,14 @@ import StatusCheck from './components/statusCheck';
 
 export * from './components/transform';
 export * from './app/config';
+export * from './app/api';
 export * from './components/previewPage';
 
 export { default as base64Encode } from './utils/base64Encode';
 export { default as getStoryPropsToSave } from './app/story/utils/getStoryPropsToSave';
 export { default as FontContext } from './app/font/context';
 export { default as useLoadFontFiles } from './app/font/actions/useLoadFontFiles';
+export { getResourceFromMediaPicker } from './app/media/utils';
 export { default as StoryPropTypes } from './types';
 export { GlobalStyle } from './theme';
 export { default as theme } from './theme'; // @todo To be refactored.
