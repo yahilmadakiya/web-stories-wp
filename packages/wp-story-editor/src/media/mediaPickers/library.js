@@ -23,7 +23,7 @@ import { __, sprintf, translateToExclusiveList } from '@web-stories-wp/i18n';
 /**
  * Internal dependencies
  */
-import useMediaPicker from './useMediaPicker';
+import { useMediaPicker } from '../useMediaPicker';
 
 const useOpenLibraryMediaPicker = ({
   optimizeVideo,

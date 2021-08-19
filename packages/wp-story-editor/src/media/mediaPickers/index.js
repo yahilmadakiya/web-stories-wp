@@ -13,27 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Internal dependencies
- */
-import useMediaPicker from './useMediaPicker';
-
-const useOpenFormMediaPicker = ({
-  title,
-  buttonInsertText,
-  onSelect,
-  onSelectErrorMessage,
-  type,
-  cropParams,
-}) => {
-  return useMediaPicker({
-    title,
-    buttonInsertText,
-    onSelect,
-    onSelectErrorMessage,
-    type,
-    cropParams,
-  });
-};
-
-export default useOpenFormMediaPicker;
+export { default as useOpenCaptionMediaPicker } from './caption';
+export { default as useOpenLibraryMediaPicker } from './library';
+export { default as useOpenFormMediaPicker } from './form';

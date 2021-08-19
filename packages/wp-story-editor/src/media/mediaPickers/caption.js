@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 /**
- * Internal dependencies
- */
-/**
  * External dependencies
  */
 import { __ } from '@web-stories-wp/i18n';
 import { useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import useMediaPicker from './useMediaPicker';
+
+/**
+ * Internal dependencies
+ */
+import { useMediaPicker } from '../useMediaPicker';
 
 const useOpenCaptionMediaPicker = ({ pushUpdate, tracks }) => {
   const captionText = __('Upload a file', 'web-stories');

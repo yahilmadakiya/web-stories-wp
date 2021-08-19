@@ -44,7 +44,7 @@ import {
   useOpenFormMediaPicker,
   useOpenCaptionMediaPicker,
   useOpenLibraryMediaPicker,
-} from './media/mediaPicker';
+} from './media';
 import './style.css'; // This way the general editor styles are loaded before all the component styles.
 
 /**
