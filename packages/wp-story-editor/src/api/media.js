@@ -17,11 +17,12 @@
  * External dependencies
  */
 import { addQueryArgs } from '@web-stories-wp/design-system';
+import { flatternFormData } from '@web-stories-wp/story-editor';
+
 /**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
-import { flatternFormData } from '@web-stories-wp/story-editor';
 
 // Important: Keep in sync with REST API preloading definition.
 export function getMedia(

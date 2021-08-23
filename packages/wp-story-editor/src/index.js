@@ -38,14 +38,14 @@ import { initializeTracking } from '@web-stories-wp/tracking';
 /**
  * Internal dependencies
  */
-import * as storyEditorConfig from './api';
+import * as apiCallbacks from './api';
 import './style.css'; // This way the general editor styles are loaded before all the component styles.
 
 /**
  * Initializes the web stories editor.
  *
  * @param {string} id       ID of the root element to render the screen in.
- * @param {Object} settings   Story editor settings.
+ * @param {Object} settings Story editor settings.
  * @param {Object} flags    The flags for the application.
  */
 const initialize = (id, settings, flags) => {
@@ -61,7 +61,7 @@ const initialize = (id, settings, flags) => {
   render(
     <FlagsProvider features={flags}>
       <StrictMode>
-        <StoryEditor settings={settings} config={storyEditorConfig}>
+        <StoryEditor settings={settings} config={apiCallbacks}>
           <PostLock />
           <StatusCheck />
         </StoryEditor>
