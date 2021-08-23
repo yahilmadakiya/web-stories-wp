@@ -17,9 +17,9 @@
 /**
  * External dependencies
  */
-import { useCallback, useMemo, useReducer } from 'react';
-import queryString from 'query-string';
+import { useCallback, useMemo, useReducer } from '@web-stories-wp/react';
 import { toUTCDate } from '@web-stories-wp/date';
+import { addQueryArgs } from '@web-stories-wp/design-system';
 import getAllTemplates from '@web-stories-wp/templates';
 import { base64Encode } from '@web-stories-wp/story-editor';
 /**
@@ -35,6 +35,7 @@ import { ERRORS } from '../textContent';
 export function reshapeTemplateObject(isLocal) {
   return ({
     id,
+    slug,
     title,
     modified,
     tags,
@@ -49,6 +50,7 @@ export function reshapeTemplateObject(isLocal) {
     title,
     createdBy,
     description,
+    slug,
     status: 'template',
     modified: toUTCDate(modified),
     tags,
@@ -144,10 +146,7 @@ const useTemplateApi = (dataAdapter, config) => {
       };
 
       try {
-        const path = queryString.stringifyUrl({
-          url: templateApi,
-          query,
-        });
+        const path = addQueryArgs(templateApi, query);
         const response = await dataAdapter.get(path, {
           parse: false,
           cache: 'no-cache',

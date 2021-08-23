@@ -17,7 +17,7 @@
  * External dependencies
  */
 import { act, renderHook } from '@testing-library/react-hooks';
-import { isPlatformMacOS } from '@web-stories-wp/design-system';
+import { isPlatformMacOS, useSnackbar } from '@web-stories-wp/design-system';
 
 /**
  * Internal dependencies
@@ -44,7 +44,10 @@ jest.mock('../../story', () => ({
 jest.mock('@web-stories-wp/design-system', () => ({
   ...jest.requireActual('@web-stories-wp/design-system'),
   isPlatformMacOS: jest.fn(),
+  useSnackbar: jest.fn(),
 }));
+
+jest.mock('@web-stories-wp/tracking');
 
 const mockEvent = {
   preventDefault: jest.fn(),
@@ -60,6 +63,7 @@ const defaultCanvasContext = {
 };
 
 const defaultStoryContext = {
+  addAnimations: jest.fn(),
   addPage: jest.fn(),
   currentPage: {
     elements: [],
@@ -69,24 +73,29 @@ const defaultStoryContext = {
   replaceCurrentPage: jest.fn(),
   selectedElements: [],
   selectedElementAnimations: [],
+  updateElementsById: jest.fn(),
 };
 
-const expectedDefaultActions = [
-  RIGHT_CLICK_MENU_LABELS.COPY,
-  RIGHT_CLICK_MENU_LABELS.PASTE,
-  RIGHT_CLICK_MENU_LABELS.DELETE,
+const expectedLayerActions = [
+  RIGHT_CLICK_MENU_LABELS.SEND_BACKWARD,
+  RIGHT_CLICK_MENU_LABELS.SEND_TO_BACK,
+  RIGHT_CLICK_MENU_LABELS.BRING_FORWARD,
+  RIGHT_CLICK_MENU_LABELS.BRING_TO_FRONT,
 ];
 
 describe('useRightClickMenu', () => {
   const mockUseCanvas = useCanvas;
   const mockUseStory = useStory;
   const mockIsPlatformMacOS = isPlatformMacOS;
+  const mockUseSnackbar = useSnackbar;
+  const mockShowSnackbar = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     mockUseStory.mockReturnValue(defaultStoryContext);
     mockUseCanvas.mockReturnValue(defaultCanvasContext);
+    mockUseSnackbar.mockReturnValue({ showSnackbar: mockShowSnackbar });
     mockIsPlatformMacOS.mockReturnValue(false);
   });
 
@@ -126,6 +135,19 @@ describe('useRightClickMenu', () => {
   });
 
   describe('Page right clicked', () => {
+    beforeEach(() => {
+      mockUseStory.mockReturnValue({
+        ...defaultStoryContext,
+        selectedElements: [
+          {
+            id: '1',
+            type: 'text',
+            isDefaultBackground: true,
+          },
+        ],
+      });
+    });
+
     it('should return the correct menu items', () => {
       const { result } = renderHook(() => useRightClickMenu(), {
         wrapper: RightClickMenuProvider,
@@ -133,10 +155,25 @@ describe('useRightClickMenu', () => {
 
       const labels = result.current.menuItems.map((item) => item.label);
       expect(labels).toStrictEqual([
-        ...expectedDefaultActions,
+        RIGHT_CLICK_MENU_LABELS.DETACH_IMAGE_FROM_BACKGROUND,
+        RIGHT_CLICK_MENU_LABELS.SCALE_AND_CROP_BACKGROUND,
+        RIGHT_CLICK_MENU_LABELS.CLEAR_STYLE,
+        RIGHT_CLICK_MENU_LABELS.ADD_NEW_PAGE_AFTER,
+        RIGHT_CLICK_MENU_LABELS.ADD_NEW_PAGE_BEFORE,
         RIGHT_CLICK_MENU_LABELS.DUPLICATE_PAGE,
         RIGHT_CLICK_MENU_LABELS.DELETE_PAGE,
       ]);
+    });
+
+    it('background media actions should be disabled', () => {
+      const { result } = renderHook(() => useRightClickMenu(), {
+        wrapper: RightClickMenuProvider,
+      });
+
+      const backgroundImageItems = result.current.menuItems.slice(0, 3);
+      backgroundImageItems.map((item) => {
+        expect(item.disabled).toBeTrue();
+      });
     });
 
     it('"delete page" button should be enabled if there is more than one page', () => {
@@ -180,7 +217,6 @@ describe('useRightClickMenu', () => {
 
       const labels = result.current.menuItems.map((item) => item.label);
       expect(labels).toStrictEqual([
-        ...expectedDefaultActions,
         RIGHT_CLICK_MENU_LABELS.SEND_BACKWARD,
         RIGHT_CLICK_MENU_LABELS.SEND_TO_BACK,
         RIGHT_CLICK_MENU_LABELS.BRING_FORWARD,
@@ -214,9 +250,7 @@ describe('useRightClickMenu', () => {
 
       const labels = result.current.menuItems.map((item) => item.label);
       expect(labels).toStrictEqual([
-        ...expectedDefaultActions,
         RIGHT_CLICK_MENU_LABELS.DETACH_IMAGE_FROM_BACKGROUND,
-        RIGHT_CLICK_MENU_LABELS.REPLACE_BACKGROUND_IMAGE,
         RIGHT_CLICK_MENU_LABELS.SCALE_AND_CROP_BACKGROUND,
         RIGHT_CLICK_MENU_LABELS.CLEAR_STYLE,
         RIGHT_CLICK_MENU_LABELS.ADD_NEW_PAGE_AFTER,
@@ -224,18 +258,6 @@ describe('useRightClickMenu', () => {
         RIGHT_CLICK_MENU_LABELS.DUPLICATE_PAGE,
         RIGHT_CLICK_MENU_LABELS.DELETE_PAGE,
       ]);
-    });
-
-    it('"Delete Page" should be disabled if there is only one page', () => {
-      const { result } = renderHook(() => useRightClickMenu(), {
-        wrapper: RightClickMenuProvider,
-      });
-
-      const deletePageMenuItem = result.current.menuItems.find(
-        (item) => item.label === RIGHT_CLICK_MENU_LABELS.DELETE_PAGE
-      );
-
-      expect(deletePageMenuItem.disabled).toBeTrue();
     });
   });
 
@@ -247,6 +269,7 @@ describe('useRightClickMenu', () => {
           {
             id: '991199',
             type: 'video',
+            borderRadius: '4px',
           },
         ],
       });
@@ -259,11 +282,7 @@ describe('useRightClickMenu', () => {
 
       const labels = result.current.menuItems.map((item) => item.label);
       expect(labels).toStrictEqual([
-        ...expectedDefaultActions,
-        RIGHT_CLICK_MENU_LABELS.SEND_BACKWARD,
-        RIGHT_CLICK_MENU_LABELS.SEND_TO_BACK,
-        RIGHT_CLICK_MENU_LABELS.BRING_FORWARD,
-        RIGHT_CLICK_MENU_LABELS.BRING_TO_FRONT,
+        ...expectedLayerActions,
         RIGHT_CLICK_MENU_LABELS.SET_AS_PAGE_BACKGROUND,
         RIGHT_CLICK_MENU_LABELS.SCALE_AND_CROP_IMAGE,
         RIGHT_CLICK_MENU_LABELS.COPY_IMAGE_STYLES,
@@ -271,9 +290,84 @@ describe('useRightClickMenu', () => {
         RIGHT_CLICK_MENU_LABELS.CLEAR_IMAGE_STYLES,
       ]);
     });
+
+    describe('copying, pasting, and clearing styles', () => {
+      it('should show a snackbar when copying, pasting, and clearing styles', () => {
+        const { result } = renderHook(() => useRightClickMenu(), {
+          wrapper: RightClickMenuProvider,
+        });
+
+        const copy = result.current.menuItems.find(
+          (item) => item.label === RIGHT_CLICK_MENU_LABELS.COPY_IMAGE_STYLES
+        );
+        act(() => {
+          copy.onClick();
+        });
+
+        expect(mockShowSnackbar).toHaveBeenCalledWith(
+          expect.objectContaining({
+            actionLabel: 'Undo',
+            message: 'Copied style.',
+          })
+        );
+
+        const paste = result.current.menuItems.find(
+          (item) => item.label === RIGHT_CLICK_MENU_LABELS.PASTE_IMAGE_STYLES
+        );
+        act(() => {
+          paste.onClick();
+        });
+
+        expect(mockShowSnackbar).toHaveBeenCalledWith(
+          expect.objectContaining({
+            actionLabel: 'Undo',
+            message: 'Pasted style.',
+          })
+        );
+
+        const clear = result.current.menuItems.find(
+          (item) => item.label === RIGHT_CLICK_MENU_LABELS.CLEAR_IMAGE_STYLES
+        );
+        act(() => {
+          clear.onClick();
+        });
+
+        expect(mockShowSnackbar).toHaveBeenCalledWith(
+          expect.objectContaining({
+            actionLabel: 'Undo',
+            message: 'Cleared style.',
+          })
+        );
+      });
+    });
   });
 
   describe('Shape element right clicked', () => {
-    it.todo('should return the correct menu items');
+    beforeEach(() => {
+      mockUseStory.mockReturnValue({
+        ...defaultStoryContext,
+        selectedElements: [
+          {
+            id: '991199',
+            type: 'shape',
+          },
+        ],
+      });
+    });
+
+    it('should return the correct menu items', () => {
+      const { result } = renderHook(() => useRightClickMenu(), {
+        wrapper: RightClickMenuProvider,
+      });
+
+      const labels = result.current.menuItems.map((item) => item.label);
+      expect(labels).toStrictEqual([
+        ...expectedLayerActions,
+        RIGHT_CLICK_MENU_LABELS.COPY_SHAPE_STYLES,
+        RIGHT_CLICK_MENU_LABELS.PASTE_SHAPE_STYLES,
+        RIGHT_CLICK_MENU_LABELS.CLEAR_SHAPE_STYLES,
+        RIGHT_CLICK_MENU_LABELS.ADD_TO_COLOR_PRESETS,
+      ]);
+    });
   });
 });

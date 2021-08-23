@@ -19,7 +19,7 @@
  */
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
-import { useCallback, useRef } from 'react';
+import { useCallback } from '@web-stories-wp/react';
 import { __ } from '@web-stories-wp/i18n';
 import {
   Button,
@@ -40,7 +40,7 @@ import { MULTIPLE_VALUE, MULTIPLE_DISPLAY_VALUE } from '../../../../constants';
 import { Row, usePresubmitHandler } from '../../../form';
 import { SimplePanel } from '../../panel';
 import { focusStyle, getCommonValue } from '../../shared';
-import { states, styles, useFocusHighlight } from '../../../../app/highlights';
+import { states, styles, useHighlights } from '../../../../app/highlights';
 import Tooltip from '../../../tooltip';
 import { useConfig } from '../../../../app';
 
@@ -95,6 +95,7 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
   /* @TODO: Implement error handling after removing modal and
   using native browser upload. */
   const uploadError = false;
+
   const {
     config: {
       mediaPickers: { caption: captionMediaPicker },
@@ -128,12 +129,16 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
 
   const uploadButtonProps = captionMediaPicker({ pushUpdate, tracks });
 
-  const buttonRef = useRef();
-  const highlight = useFocusHighlight(states.CAPTIONS, buttonRef);
+  const { highlight, resetHighlight } = useHighlights((state) => ({
+    highlight: state[states.CAPTIONS],
+    resetHighlight: state.onFocusOut,
+    cancelHighlight: state.cancelEffect,
+  }));
 
   return (
     <SimplePanel
       css={highlight?.showEffect && styles.FLASH}
+      onAnimationEnd={() => resetHighlight()}
       name="caption"
       title={__('Caption and Subtitles', 'web-stories')}
       isPersistable={!highlight}
@@ -180,7 +185,12 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
           <Row expand>
             <UploadButton
               css={highlight?.showEffect && styles.OUTLINE}
-              ref={buttonRef}
+              onAnimationEnd={() => resetHighlight()}
+              ref={(node) => {
+                if (node && highlight?.focus && highlight?.showEffect) {
+                  node.focus();
+                }
+              }}
               type={BUTTON_TYPES.SECONDARY}
               size={BUTTON_SIZES.SMALL}
               variant={BUTTON_VARIANTS.RECTANGLE}

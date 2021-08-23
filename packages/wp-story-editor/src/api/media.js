@@ -1,12 +1,33 @@
+/*
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /**
- * External dependencies.
+ * External dependencies
  */
 import { addQueryArgs } from '@web-stories-wp/design-system';
+/**
+ * WordPress dependencies
+ */
 import apiFetch from '@wordpress/api-fetch';
 import { flatternFormData } from '@web-stories-wp/story-editor/src/app/api/utils';
 
 // Important: Keep in sync with REST API preloading definition.
-export function getMedia( media, { mediaType, searchTerm, pagingNum, cacheBust }) {
+export function getMedia(
+  media,
+  { mediaType, searchTerm, pagingNum, cacheBust }
+) {
   let apiPath = media;
   const perPage = 100;
   apiPath = addQueryArgs(apiPath, {
@@ -18,7 +39,6 @@ export function getMedia( media, { mediaType, searchTerm, pagingNum, cacheBust }
       'id',
       'date_gmt',
       'media_details',
-      'title',
       'mime_type',
       'featured_media',
       'featured_media_src',
@@ -58,12 +78,12 @@ export function getMedia( media, { mediaType, searchTerm, pagingNum, cacheBust }
 /**
  * Upload file to via REST API.
  *
- * @param {Object}  media
+ * @param {Object}  media          Media object.
  * @param {File}    file           Media File to Save.
  * @param {?Object} additionalData Additional data to include in the request.
  * @return {Promise} Media Object Promise.
  */
-export function uploadMedia( media, file, additionalData) {
+export function uploadMedia(media, file, additionalData) {
   // Create upload payload
   const data = new window.FormData();
   data.append('file', file, file.name || file.type.replace('/', '.'));
@@ -81,12 +101,12 @@ export function uploadMedia( media, file, additionalData) {
 /**
  * Update Existing media.
  *
- * @param  {Object} media
- * @param  {number} mediaId
+ * @param  {Object} media Media object.
+ * @param  {number} mediaId Media id.
  * @param  {Object} data Object of properties to update on attachment.
  * @return {Promise} Media Object Promise.
  */
-export function updateMedia( media, mediaId, data){
+export function updateMedia(media, mediaId, data) {
   return apiFetch({
     path: `${media}${mediaId}/`,
     data,
@@ -97,11 +117,11 @@ export function updateMedia( media, mediaId, data){
 /**
  * Delete existing media.
  *
- * @param  {Object} media
- * @param  {number} mediaId
+ * @param  {Object} media Media object.
+ * @param  {number} mediaId Media Id.
  * @return {Promise} Media Object Promise.
  */
-export function deleteMedia( media, mediaId) {
+export function deleteMedia(media, mediaId) {
   // `apiFetch` by default turns `DELETE` requests into `POST` requests
   // with `X-HTTP-Method-Override: DELETE` headers.
   // However, some Web Application Firewall (WAF) solutions prevent this.

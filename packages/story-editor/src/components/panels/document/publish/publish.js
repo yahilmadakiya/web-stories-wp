@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { useCallback, useRef, useMemo } from 'react';
+import { useCallback, useMemo } from '@web-stories-wp/react';
 import styled from 'styled-components';
 import { __, sprintf, translateToExclusiveList } from '@web-stories-wp/i18n';
 import {
@@ -31,7 +31,7 @@ import {
  */
 import { useStory } from '../../../../app/story';
 import { useConfig } from '../../../../app/config';
-import { useFocusHighlight, states, styles } from '../../../../app/highlights';
+import { useHighlights, states, styles } from '../../../../app/highlights';
 import { Row, Media, Required } from '../../../form';
 import useInspector from '../../../inspector/useInspector';
 import { Panel, PanelTitle, PanelContent } from '../../panel';
@@ -87,35 +87,37 @@ function PublishPanel() {
     state: { users },
   } = useInspector();
 
-  const posterButtonRef = useRef();
-  const publisherLogoRef = useRef();
-
-  const highlightPoster = useFocusHighlight(states.POSTER, posterButtonRef);
-  const highlightLogo = useFocusHighlight(
-    states.PUBLISHER_LOGO,
-    publisherLogoRef
+  const { highlightPoster, highlightLogo, resetHighlight } = useHighlights(
+    (state) => ({
+      highlightPoster: state[states.POSTER],
+      highlightLogo: state[states.PUBLISHER_LOGO],
+      resetHighlight: state.onFocusOut,
+      cancelHighlight: state.cancelEffect,
+    })
   );
 
-  const { featuredMedia, publisherLogoUrl, updateStory } = useStory(
-    ({
-      state: {
-        story: {
-          featuredMedia = { id: 0, url: '', height: 0, width: 0 },
-          publisherLogoUrl = '',
+  const { featuredMedia, publisherLogoUrl, updateStory, capabilities } =
+    useStory(
+      ({
+        state: {
+          story: {
+            featuredMedia = { id: 0, url: '', height: 0, width: 0 },
+            publisherLogoUrl = '',
+          },
+          capabilities,
         },
-      },
-      actions: { updateStory },
-    }) => {
-      return {
-        featuredMedia,
-        publisherLogoUrl,
-        updateStory,
-      };
-    }
-  );
+        actions: { updateStory },
+      }) => {
+        return {
+          featuredMedia,
+          publisherLogoUrl,
+          updateStory,
+          capabilities,
+        };
+      }
+    );
 
-  const { capabilities, allowedImageMimeTypes, allowedImageFileTypes } =
-    useConfig();
+  const { allowedImageMimeTypes, allowedImageFileTypes } = useConfig();
 
   const handleChangePoster = useCallback(
     (image) =>
@@ -182,18 +184,25 @@ function PublishPanel() {
       <PanelTitle>{__('Publishing', 'web-stories')}</PanelTitle>
       <PanelContent>
         <PublishTime />
-        {capabilities && capabilities.hasAssignAuthorAction && users && (
-          <Author />
-        )}
+        {capabilities?.hasAssignAuthorAction && users && <Author />}
         <HighlightRow
           isHighlighted={
             highlightPoster?.showEffect || highlightLogo?.showEffect
           }
+          onAnimationEnd={() => resetHighlight()}
         >
           <MediaInputWrapper>
             <MediaWrapper>
               <StyledMedia
-                ref={posterButtonRef}
+                ref={(node) => {
+                  if (
+                    node &&
+                    highlightPoster?.focus &&
+                    highlightPoster?.showEffect
+                  ) {
+                    node.focus();
+                  }
+                }}
                 width={72}
                 height={96}
                 cropParams={{
@@ -224,7 +233,15 @@ function PublishPanel() {
                   width: 96,
                   height: 96,
                 }}
-                ref={publisherLogoRef}
+                ref={(node) => {
+                  if (
+                    node &&
+                    highlightLogo?.focus &&
+                    highlightLogo?.showEffect
+                  ) {
+                    node.focus();
+                  }
+                }}
                 value={publisherLogoUrl}
                 onChange={handleChangePublisherLogo}
                 onChangeErrorText={publisherLogoErrorMessage}

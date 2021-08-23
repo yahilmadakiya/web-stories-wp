@@ -17,12 +17,15 @@
 /**
  * External dependencies
  */
-import { useCallback, useMemo, useReducer, useRef } from 'react';
-import queryString from 'query-string';
+import {
+  useCallback,
+  useMemo,
+  useReducer,
+  useRef,
+} from '@web-stories-wp/react';
 import { useFeatures } from 'flagged';
-import { __, sprintf } from '@web-stories-wp/i18n';
+import { addQueryArgs } from '@web-stories-wp/design-system';
 import { getTimeTracker } from '@web-stories-wp/tracking';
-import { base64Encode } from '@web-stories-wp/story-editor';
 
 /**
  * Internal dependencies
@@ -32,7 +35,6 @@ import {
   STORY_SORT_OPTIONS,
   ORDER_BY_SORT,
   STORIES_PER_REQUEST,
-  STORY_STATUS,
 } from '../../constants';
 import storyReducer, {
   defaultStoriesState,
@@ -54,17 +56,13 @@ const STORY_FIELDS = [
   'featured_media_url',
   'preview_link',
   'edit_link',
-  // TODO: Remove need for story_data as its a lot of data sent over the wire.
-  // It's only needed for duplicating stories.
-  'content',
-  'story_data',
   // _web_stories_envelope will add these fields, we need them too.
   'body',
   'status',
   'headers',
 ].join(',');
 
-const useStoryApi = (dataAdapter, { storyApi, encodeMarkup }) => {
+const useStoryApi = (dataAdapter, { storyApi }) => {
   const isInitialFetch = useRef(true);
   const initialFetchListeners = useMemo(() => new Map(), []);
   const [state, dispatch] = useReducer(storyReducer, defaultStoriesState);
@@ -111,11 +109,7 @@ const useStoryApi = (dataAdapter, { storyApi, encodeMarkup }) => {
       const trackTiming = getTimeTracker('load_stories');
 
       try {
-        const path = queryString.stringifyUrl({
-          url: storyApi,
-          query,
-        });
-
+        const path = addQueryArgs(storyApi, query);
         const response = await dataAdapter.get(path);
 
         const totalPages =
@@ -132,38 +126,17 @@ const useStoryApi = (dataAdapter, { storyApi, encodeMarkup }) => {
         }
         isInitialFetch.current = false;
 
-        // Hardening in case data returned by the server is malformed.
-        // For example, story_data could be missing/empty.
-        const cleanStories = response.body.filter((story) =>
-          Array.isArray(story?.story_data?.pages)
-        );
+        const stories = response.body;
 
-        if (
-          cleanStories.length === 0 &&
-          cleanStories.length !== response.body.length
-        ) {
-          dispatch({
-            type: STORY_ACTION_TYPES.FETCH_STORIES_FAILURE,
-            payload: {
-              message: ERRORS.LOAD_STORIES.INCOMPLETE_DATA_MESSAGE,
-            },
-          });
-        } else {
-          dispatch({
-            type: STORY_ACTION_TYPES.FETCH_STORIES_SUCCESS,
-            payload: {
-              stories: cleanStories,
-              totalPages,
-              totalStoriesByStatus: {
-                ...totalStoriesByStatus,
-                [STORY_STATUS.PUBLISHED_AND_FUTURE]:
-                  totalStoriesByStatus[STORY_STATUS.PUBLISH] +
-                  totalStoriesByStatus[STORY_STATUS.FUTURE],
-              },
-              page,
-            },
-          });
-        }
+        dispatch({
+          type: STORY_ACTION_TYPES.FETCH_STORIES_SUCCESS,
+          payload: {
+            stories,
+            totalPages,
+            totalStoriesByStatus,
+            page,
+          },
+        });
       } catch (err) {
         dispatch({
           type: STORY_ACTION_TYPES.FETCH_STORIES_FAILURE,
@@ -188,11 +161,8 @@ const useStoryApi = (dataAdapter, { storyApi, encodeMarkup }) => {
       const trackTiming = getTimeTracker('load_update_story');
 
       try {
-        const path = queryString.stringifyUrl({
-          url: `${storyApi}${story.id}/`,
-          query: {
-            _embed: 'wp:lock,wp:lockuser,author',
-          },
+        const path = addQueryArgs(`${storyApi}${story.id}/`, {
+          _embed: 'wp:lock,wp:lockuser,author',
         });
 
         const data = {
@@ -277,11 +247,8 @@ const useStoryApi = (dataAdapter, { storyApi, encodeMarkup }) => {
           flags,
         });
 
-        const path = queryString.stringifyUrl({
-          url: storyApi,
-          query: {
-            _fields: 'edit_link',
-          },
+        const path = addQueryArgs(storyApi, {
+          _fields: 'edit_link',
         });
 
         const response = await dataAdapter.post(path, {
@@ -325,40 +292,17 @@ const useStoryApi = (dataAdapter, { storyApi, encodeMarkup }) => {
 
       try {
         const {
-          content,
-          story_data,
-          style_presets,
-          publisher_logo,
-          featured_media,
-          title,
-        } = story.originalStoryData;
+          originalStoryData: { id },
+        } = story;
 
-        const path = queryString.stringifyUrl({
-          url: storyApi,
-          query: {
-            _embed: 'wp:lock,wp:lockuser,author',
-            _fields: STORY_FIELDS,
-          },
+        const path = addQueryArgs(storyApi, {
+          _embed: 'wp:lock,wp:lockuser,author',
+          _fields: STORY_FIELDS,
         });
-
-        const storyContent = encodeMarkup
-          ? base64Encode(content?.raw)
-          : content?.raw;
 
         const response = await dataAdapter.post(path, {
           data: {
-            content: content?.raw ? storyContent : undefined,
-            story_data,
-            featured_media,
-            style_presets,
-            publisher_logo,
-            title: {
-              raw: sprintf(
-                /* translators: %s: story title. */
-                __('%s (Copy)', 'web-stories'),
-                title.raw
-              ),
-            },
+            original_id: id,
             status: 'draft',
           },
         });
@@ -378,7 +322,7 @@ const useStoryApi = (dataAdapter, { storyApi, encodeMarkup }) => {
         trackTiming();
       }
     },
-    [storyApi, dataAdapter, encodeMarkup]
+    [storyApi, dataAdapter]
   );
 
   const addInitialFetchListener = useCallback(
