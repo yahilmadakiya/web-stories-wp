@@ -34,7 +34,6 @@ export { default as StoryPropTypes } from './types';
 export { GlobalStyle } from './theme';
 export { default as theme } from './theme'; // @todo To be refactored.
 export { GlobalStyle as CropMoveableGlobalStyle } from './components/moveable/cropStyle';
-export { ConfigProvider as EditorConfigProvider } from './app/config';
 
 export { PostLock, StatusCheck };
 export default StoryEditor;
