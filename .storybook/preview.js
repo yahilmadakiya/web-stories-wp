@@ -33,7 +33,7 @@ import {
   theme,
   GlobalStyle,
   CropMoveableGlobalStyle,
-  EditorConfigProvider,
+  ConfigProvider,
 } from '@web-stories-wp/story-editor';
 import {
   DashboardGlobalStyle,
@@ -131,12 +131,12 @@ addDecorator((story, context) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <EditorConfigProvider config={{ isRTL }}>
+      <ConfigProvider config={{ isRTL }}>
         <GlobalStyle />
         <CropMoveableGlobalStyle />
         <ModalGlobalStyle />
         {story()}
-      </EditorConfigProvider>
+      </ConfigProvider>
     </ThemeProvider>
   );
 });

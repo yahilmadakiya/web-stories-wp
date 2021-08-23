@@ -60,9 +60,7 @@ function MediaInput(
   forwardedRef
 ) {
   const {
-    config: {
-      mediaPickers: { form: formMediaPicker },
-    },
+    mediaPickers: { form: formMediaPicker },
   } = useConfig();
 
   const formButtonProps = formMediaPicker({

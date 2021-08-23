@@ -50,13 +50,13 @@ import { GlobalStyle as CalendarStyle } from './components/form/dateTime/calenda
 import KeyboardOnlyOutlines from './utils/keyboardOnlyOutline';
 import { MetaBoxesProvider } from './integrations/wordpress/metaBoxes';
 
-function App({ settings, config, children }) {
-  const { storyId, isRTL } = settings;
+function App({ config, children }) {
+  const { storyId, isRTL } = config;
   return (
     <StyleSheetManager stylisPlugins={isRTL ? [stylisRTLPlugin] : []}>
       <ThemeProvider theme={theme}>
         <ErrorBoundary>
-          <ConfigProvider settings={settings} config={config}>
+          <ConfigProvider config={config}>
             <APIProvider>
               <FileProvider>
                 <Media3pApiProvider>
@@ -101,7 +101,6 @@ function App({ settings, config, children }) {
 }
 
 App.propTypes = {
-  settings: PropTypes.object.isRequired,
   config: PropTypes.object.isRequired,
   children: PropTypes.node,
 };

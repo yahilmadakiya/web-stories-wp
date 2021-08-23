@@ -24,17 +24,12 @@ import PropTypes from 'prop-types';
  */
 import Context from './context';
 
-function ConfigProvider({ settings, config, children }) {
-  return (
-    <Context.Provider value={{ ...settings, config }}>
-      {children}
-    </Context.Provider>
-  );
+function ConfigProvider({ config, children }) {
+  return <Context.Provider value={config}>{children}</Context.Provider>;
 }
 
 ConfigProvider.propTypes = {
   children: PropTypes.node,
-  settings: PropTypes.object.isRequired,
   config: PropTypes.object.isRequired,
 };
 

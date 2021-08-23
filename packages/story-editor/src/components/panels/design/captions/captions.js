@@ -97,9 +97,7 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
   const uploadError = false;
 
   const {
-    config: {
-      mediaPickers: { caption: captionMediaPicker },
-    },
+    mediaPickers: { caption: captionMediaPicker },
   } = useConfig();
 
   usePresubmitHandler(

@@ -169,9 +169,7 @@ function MediaPane(props) {
       video: allowedVideoMimeTypes,
     },
     capabilities: { hasUploadMediaAction },
-    config: {
-      mediaPickers: { library: libraryMediaPicker },
-    },
+    mediaPickers: { library: libraryMediaPicker },
   } = useConfig();
 
   const { isTranscodingEnabled } = useFFmpeg();
