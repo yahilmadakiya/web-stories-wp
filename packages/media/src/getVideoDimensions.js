@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,20 @@
 /**
  * Internal dependencies
  */
-import ColorPresetActions from '../design/preset/colorPreset/colorPresetActions';
+import preloadVideoMetadata from './preloadVideoMetadata';
 
-function getColorPickerActions(color, pushUpdate, onAction) {
-  return (
-    <ColorPresetActions
-      color={color}
-      pushUpdate={pushUpdate}
-      onAction={onAction}
-    />
-  );
-}
+/**
+ * Get video dimensions from a video.
+ *
+ * @param {string} src Video source.
+ * @return {Promise} Video dimensions object.
+ */
+const getVideoDimensions = async (src) => {
+  const video = await preloadVideoMetadata(src);
+  return {
+    width: video.videoWidth,
+    height: video.videoHeight,
+  };
+};
 
-export default getColorPickerActions;
+export default getVideoDimensions;

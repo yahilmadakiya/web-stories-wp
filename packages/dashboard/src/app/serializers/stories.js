@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { REST_LINKS } from '../../constants';
+
 export default function reshapeStoryObject(originalStoryData) {
   const {
     id,
@@ -27,16 +32,24 @@ export default function reshapeStoryObject(originalStoryData) {
     featured_media_url: featuredMediaUrl,
     preview_link: previewLink,
     edit_link: editStoryLink,
-    story_data: storyData,
     _embedded: {
       author = [{ name: '' }],
       'wp:lock': lock = [{ locked: false }],
-      'wp:lockuser': lockUser = [{ id: 0, name: '', avatar_urls: {} }],
+      'wp:lockuser': lockUser = [{ id: 0, name: '' }],
     } = {},
+    _links: links = {},
   } = originalStoryData;
-  if (!Array.isArray(storyData.pages) || !id || storyData.pages.length === 0) {
+  if (!id) {
     return null;
   }
+
+  const capabilities = {
+    hasEditAction: Object.prototype.hasOwnProperty.call(links, REST_LINKS.EDIT),
+    hasDeleteAction: Object.prototype.hasOwnProperty.call(
+      links,
+      REST_LINKS.DELETE
+    ),
+  };
 
   return {
     id,
@@ -51,7 +64,7 @@ export default function reshapeStoryObject(originalStoryData) {
     lockUser: {
       id: lockUser[0].id,
       name: lockUser[0].name,
-      avatar: lockUser[0].avatar_urls['96'] || null,
+      avatar: lockUser[0]?.avatar_urls?.['96'] || null,
     },
     bottomTargetAction: editStoryLink,
     featuredMediaUrl,
@@ -59,5 +72,6 @@ export default function reshapeStoryObject(originalStoryData) {
     previewLink,
     link,
     originalStoryData,
+    capabilities,
   };
 }

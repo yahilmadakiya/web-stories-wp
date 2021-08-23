@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { useCallback, useRef } from 'react';
+import { useCallback } from '@web-stories-wp/react';
 import { __ } from '@web-stories-wp/i18n';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -38,9 +38,8 @@ import { Color, Row as DefaultRow } from '../../../form';
 import { useStory } from '../../../../app';
 import { SimplePanel } from '../../panel';
 import { FlipControls } from '../../shared';
-import getColorPickerActions from '../../shared/getColorPickerActions';
 import { getDefinitionForType } from '../../../../elements';
-import { states, styles, useFocusHighlight } from '../../../../app/highlights';
+import { states, styles, useHighlights } from '../../../../app/highlights';
 
 const DEFAULT_FLIP = { horizontal: false, vertical: false };
 
@@ -108,8 +107,13 @@ function PageBackgroundPanel({ selectedElements, pushUpdate }) {
     clearBackgroundElement();
   }, [pushUpdate, clearBackgroundElement]);
 
-  const inputRef = useRef(null);
-  const highlight = useFocusHighlight(states.PAGE_BACKGROUND, inputRef);
+  const { highlight, resetHighlight, cancelHighlight } = useHighlights(
+    (state) => ({
+      highlight: state[states.PAGE_BACKGROUND],
+      resetHighlight: state.onFocusOut,
+      cancelHighlight: state.cancelEffect,
+    })
+  );
 
   const backgroundEl = selectedElements[0];
   if (!backgroundEl || !backgroundEl.isBackground) {
@@ -127,6 +131,7 @@ function PageBackgroundPanel({ selectedElements, pushUpdate }) {
   return (
     <SimplePanel
       css={highlight?.showEffect && styles.FLASH}
+      onAnimationEnd={() => resetHighlight()}
       name="pageBackground"
       title={__('Page background', 'web-stories')}
       isPersistable={!highlight}
@@ -134,13 +139,20 @@ function PageBackgroundPanel({ selectedElements, pushUpdate }) {
       {isDefaultBackground && (
         <Row>
           <Color
-            ref={inputRef}
-            hasGradient
+            ref={(node) => {
+              if (node && highlight?.focus && highlight?.showEffect) {
+                node.addEventListener('keydown', cancelHighlight, {
+                  once: true,
+                });
+                node.focus();
+              }
+            }}
+            allowsGradient
             value={backgroundColor}
             onChange={updateBackgroundColor}
             label={__('Background color', 'web-stories')}
-            colorPickerActions={getColorPickerActions}
-            hasOpacity={false}
+            allowsSavedColors
+            allowsOpacity={false}
           />
         </Row>
       )}

@@ -18,7 +18,6 @@ export function getMedia( media, { mediaType, searchTerm, pagingNum, cacheBust }
       'id',
       'date_gmt',
       'media_details',
-      'title',
       'mime_type',
       'featured_media',
       'featured_media_src',

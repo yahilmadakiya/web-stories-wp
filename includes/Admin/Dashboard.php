@@ -265,10 +265,6 @@ class Dashboard extends Service_Base {
 								'featured_media_url',
 								'preview_link',
 								'edit_link',
-								// TODO: Remove need for this as it's a lot of data sent over the wire.
-								// It's only needed for duplicating stories.
-								'content',
-								'story_data',
 								// _web_stories_envelope will add these fields, we need them too.
 								'body',
 								'status',
@@ -377,8 +373,7 @@ class Dashboard extends Service_Base {
 			$max_upload_size = 0;
 		}
 
-		$can_read_private_posts = $this->get_post_type_cap( Story_Post_Type::POST_TYPE_SLUG, 'read_private_posts' );
-		$templates_rest_base    = $this->get_post_type_rest_base( Template_Post_Type::POST_TYPE_SLUG );
+		$templates_rest_base = $this->get_post_type_rest_base( Template_Post_Type::POST_TYPE_SLUG );
 
 		$settings = [
 			'id'         => 'web-stories-dashboard',
@@ -404,9 +399,8 @@ class Dashboard extends Service_Base {
 				'maxUpload'             => $max_upload_size,
 				'maxUploadFormatted'    => size_format( $max_upload_size ),
 				'capabilities'          => [
-					'canManageSettings'   => current_user_can( 'manage_options' ),
-					'canUploadFiles'      => current_user_can( 'upload_files' ),
-					'canReadPrivatePosts' => $can_read_private_posts,
+					'canManageSettings' => current_user_can( 'manage_options' ),
+					'canUploadFiles'    => current_user_can( 'upload_files' ),
 				],
 				'siteKitStatus'         => $this->site_kit->get_plugin_status(),
 			],
