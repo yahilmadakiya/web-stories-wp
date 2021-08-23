@@ -30,7 +30,7 @@ export function getMedia(
   { mediaType, searchTerm, pagingNum, cacheBust }
 ) {
   let apiPath = media;
-  const perPage = 100;
+  const perPage = 10;
   apiPath = addQueryArgs(apiPath, {
     context: 'edit',
     per_page: perPage,
@@ -71,9 +71,14 @@ export function getMedia(
     apiPath = addQueryArgs(apiPath, { cache_bust: true });
   }
 
-  return apiFetch({ path: apiPath }).then((response) => {
-    return { data: response.body, headers: response.headers };
-  });
+  return apiFetch({ path: apiPath }).then(({ body, headers }) => ({
+    data: body,
+    headers: {
+      ...headers,
+      totalItems: headers['X-WP-Total'],
+      totalPages: headers['X-WP-TotalPages'],
+    },
+  }));
 }
 
 /**
