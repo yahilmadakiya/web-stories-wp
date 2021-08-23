@@ -23,6 +23,7 @@ import StatusCheck from './components/statusCheck';
 
 export * from './components/transform';
 export * from './app/config';
+export * from './app/api/utils';
 export * from './components/previewPage';
 
 export { default as base64Encode } from './utils/base64Encode';
