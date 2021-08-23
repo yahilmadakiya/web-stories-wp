@@ -87,21 +87,23 @@ function APIProvider({ children }) {
       content,
       author,
       ...rest
-    }) => ({
-      story_data: {
-        version: DATA_VERSION,
-        pages,
-        autoAdvance,
-        defaultPageDuration,
-        currentStoryStyles,
-      },
-      featured_media: featuredMedia.id,
-      style_presets: globalStoryStyles,
-      publisher_logo: publisherLogo,
-      content: encodeMarkup ? base64Encode(content) : content,
-      author: author.id,
-      ...rest,
-    }),
+    }) => {
+      return {
+        story_data: {
+          version: DATA_VERSION,
+          pages,
+          autoAdvance,
+          defaultPageDuration,
+          currentStoryStyles,
+        },
+        featured_media: featuredMedia.id,
+        style_presets: globalStoryStyles,
+        publisher_logo: publisherLogo,
+        content: encodeMarkup ? base64Encode(content) : content,
+        author: author.id,
+        ...rest,
+      };
+    },
     [encodeMarkup]
   );
 
