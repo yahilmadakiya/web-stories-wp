@@ -50,7 +50,7 @@ import './style.css'; // This way the general editor styles are loaded before al
  * Initializes the web stories editor.
  *
  * @param {string} id       ID of the root element to render the screen in.
- * @param {Object} settings   Story editor settings.
+ * @param {Object} settings Story editor settings.
  * @param {Object} flags    The flags for the application.
  */
 const initialize = (id, settings, flags) => {

@@ -18,7 +18,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef } from '@web-stories-wp/react';
 import { DATA_VERSION } from '@web-stories-wp/migration';
 import getAllTemplates from '@web-stories-wp/templates';
 
@@ -87,21 +87,23 @@ function APIProvider({ children }) {
       content,
       author,
       ...rest
-    }) => ({
-      story_data: {
-        version: DATA_VERSION,
-        pages,
-        autoAdvance,
-        defaultPageDuration,
-        currentStoryStyles,
-      },
-      featured_media: featuredMedia.id,
-      style_presets: globalStoryStyles,
-      publisher_logo: publisherLogo,
-      content: encodeMarkup ? base64Encode(content) : content,
-      author: author.id,
-      ...rest,
-    }),
+    }) => {
+      return {
+        story_data: {
+          version: DATA_VERSION,
+          pages,
+          autoAdvance,
+          defaultPageDuration,
+          currentStoryStyles,
+        },
+        featured_media: featuredMedia.id,
+        style_presets: globalStoryStyles,
+        publisher_logo: publisherLogo,
+        content: encodeMarkup ? base64Encode(content) : content,
+        author: author.id,
+        ...rest,
+      };
+    },
     [encodeMarkup]
   );
 
@@ -125,7 +127,7 @@ function APIProvider({ children }) {
 
   // @todo Handle undefined actions in their components.
   actions.getStoryById = useCallback(
-    (storyId) => getStoryById(stories, storyId),
+    (storyId) => (getStoryById ? getStoryById(stories, storyId) : undefined),
     [stories, getStoryById]
   );
   actions.getStoryLockById = useCallback(
@@ -151,44 +153,53 @@ function APIProvider({ children }) {
     [stories, getDemoStoryById]
   );
   actions.saveStoryById = useCallback(
-    (story) => saveStoryById(story, stories, getStorySaveData),
+    (story) =>
+      saveStoryById
+        ? saveStoryById(story, stories, getStorySaveData)
+        : undefined,
     [stories, getStorySaveData, saveStoryById]
   );
   actions.autoSaveById = useCallback(
-    (story) => autoSaveById(stories, story, getStorySaveData),
+    (story) =>
+      autoSaveById ? autoSaveById(stories, story, getStorySaveData) : undefined,
     [stories, getStorySaveData, autoSaveById]
   );
   actions.getMedia = useCallback(
     ({ mediaType, searchTerm, pagingNum, cacheBust }) =>
-      getMedia(media, { mediaType, searchTerm, pagingNum, cacheBust }),
+      getMedia
+        ? getMedia(media, { mediaType, searchTerm, pagingNum, cacheBust })
+        : undefined,
     [media, getMedia]
   );
   actions.uploadMedia = useCallback(
-    (file, additionalData) => uploadMedia(media, file, additionalData),
+    (file, additionalData) =>
+      uploadMedia ? uploadMedia(media, file, additionalData) : undefined,
     [media, uploadMedia]
   );
   actions.updateMedia = useCallback(
-    (mediaId, data) => updateMedia(media, mediaId, data),
+    (mediaId, data) =>
+      updateMedia ? updateMedia(media, mediaId, data) : undefined,
     [media, updateMedia]
   );
   actions.deleteMedia = useCallback(
-    (mediaId) => deleteMedia(media, mediaId),
+    (mediaId) => (deleteMedia ? deleteMedia(media, mediaId) : undefined),
     [media, deleteMedia]
   );
   actions.getLinkMetadata = useCallback(
-    (url) => getLinkMetadata(url, link),
+    (url) => (getLinkMetadata ? getLinkMetadata(url, link) : undefined),
     [link, getLinkMetadata]
   );
   actions.getAuthors = useCallback(
-    (search = null) => getAuthors(search, users),
+    (search = null) => (getAuthors ? getAuthors(search, users) : undefined),
     [users, getAuthors]
   );
   actions.getCurrentUser = useCallback(
-    () => getCurrentUser(currentUser),
+    () => (getCurrentUser ? getCurrentUser(currentUser) : undefined),
     [currentUser, getCurrentUser]
   );
   actions.updateCurrentUser = useCallback(
-    (data) => updateCurrentUser(data, currentUser),
+    (data) =>
+      updateCurrentUser ? updateCurrentUser(data, currentUser) : undefined,
     [currentUser, updateCurrentUser]
   );
   actions.saveMetaBoxes = useCallback(
@@ -204,15 +215,22 @@ function APIProvider({ children }) {
     [statusCheck, encodeMarkup, getStatusCheck]
   );
   actions.getCustomPageTemplates = useCallback(
-    (page = 1) => getCustomPageTemplates(page, customPageTemplates),
+    (page = 1) =>
+      getCustomPageTemplates
+        ? getCustomPageTemplates(page, customPageTemplates)
+        : undefined,
     [customPageTemplates, getCustomPageTemplates]
   );
   actions.addPageTemplate = useCallback(
-    (page) => addPageTemplate(page, customPageTemplates),
+    (page) =>
+      addPageTemplate ? addPageTemplate(page, customPageTemplates) : undefined,
     [customPageTemplates, addPageTemplate]
   );
   actions.deletePageTemplate = useCallback(
-    (id) => deletePageTemplate(id, customPageTemplates),
+    (id) =>
+      deletePageTemplate
+        ? deletePageTemplate(id, customPageTemplates)
+        : undefined,
     [customPageTemplates, deletePageTemplate]
   );
 

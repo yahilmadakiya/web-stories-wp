@@ -17,11 +17,12 @@
  * External dependencies
  */
 import { addQueryArgs } from '@web-stories-wp/design-system';
+import { flatternFormData } from '@web-stories-wp/story-editor';
+
 /**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
-import { flatternFormData } from '@web-stories-wp/story-editor/src/app/api/utils';
 
 // Important: Keep in sync with REST API preloading definition.
 export function getMedia(
@@ -78,7 +79,7 @@ export function getMedia(
 /**
  * Upload file to via REST API.
  *
- * @param {Object}  media          Media object.
+ * @param {Object}  media          Media object
  * @param {File}    file           Media File to Save.
  * @param {?Object} additionalData Additional data to include in the request.
  * @return {Promise} Media Object Promise.
@@ -101,9 +102,9 @@ export function uploadMedia(media, file, additionalData) {
 /**
  * Update Existing media.
  *
- * @param  {Object} media Media object.
- * @param  {number} mediaId Media id.
- * @param  {Object} data Object of properties to update on attachment.
+ * @param  {Object} media   Media object
+ * @param  {number} mediaId Media id
+ * @param  {Object} data    Object of properties to update on attachment.
  * @return {Promise} Media Object Promise.
  */
 export function updateMedia(media, mediaId, data) {
@@ -117,8 +118,8 @@ export function updateMedia(media, mediaId, data) {
 /**
  * Delete existing media.
  *
- * @param  {Object} media Media object.
- * @param  {number} mediaId Media Id.
+ * @param  {Object} media Media object
+ * @param  {number} mediaId Media id
  * @return {Promise} Media Object Promise.
  */
 export function deleteMedia(media, mediaId) {
