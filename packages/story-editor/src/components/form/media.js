@@ -83,7 +83,7 @@ function MediaInput(
       buttonInsertText={buttonInsertText}
       onSelect={onChange}
       onSelectErrorMessage={onChangeErrorText}
-      allowedMimeTypes={type}
+      type={type}
       cropParams={cropParams}
       render={(open) => {
         // @todo Needs refactoring to use useCallback.

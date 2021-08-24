@@ -200,7 +200,7 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
                 'Please choose a VTT file to use as caption.',
                 'web-stories'
               )}
-              allowedMimeTypes={['text/vtt']}
+              type={['text/vtt']}
               title={captionText}
               buttonInsertText={__('Select caption', 'web-stories')}
               render={(open) => (

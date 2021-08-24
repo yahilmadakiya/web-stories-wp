@@ -16,42 +16,22 @@
 /**
  * External dependencies
  */
-import { isValidElement } from '@web-stories-wp/react';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import { useMediaPicker } from './useMediaPicker';
 
-function MediaUpload({
-  render,
-  onSelect,
-  onClose,
-  onSelectErrorMessage,
-  allowedMimeTypes,
-  setIsPermissionDialogOpen,
-  title,
-  buttonInsertText,
-  cropParams,
-  multiple,
-}) {
-  const open = useMediaPicker({
-    onSelect,
-    onSelectErrorMessage,
-    onClose,
-    type: allowedMimeTypes,
-    title,
-    buttonInsertText,
-    cropParams,
-    multiple,
-    onPermissionError: () => setIsPermissionDialogOpen(true),
-  });
-
-  if (!render || !isValidElement(render())) {
-    return null;
-  }
+function MediaUpload({ render, ...rest }) {
+  const open = useMediaPicker(rest);
 
   return render(open);
 }
+
+MediaUpload.propTypes = {
+  render: PropTypes.func.isRequired,
+  ...useMediaPicker.propTypes,
+};
 
 export default MediaUpload;

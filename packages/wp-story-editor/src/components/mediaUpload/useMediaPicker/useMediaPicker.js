@@ -22,6 +22,7 @@ import { __ } from '@web-stories-wp/i18n';
 import { trackEvent } from '@web-stories-wp/tracking';
 import { useSnackbar } from '@web-stories-wp/design-system';
 import { useConfig, useAPI } from '@web-stories-wp/story-editor';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
@@ -50,7 +51,7 @@ const defaultCropParams = {
  * @param {Object} props.cropParams Object params for cropped images.
  * @return {Function} Callback to open the media picker.
  */
-export default function useMediaPicker({
+function useMediaPicker({
   title = __('Upload to Story', 'web-stories'),
   buttonInsertText = __('Insert into page', 'web-stories'),
   onSelect,
@@ -297,3 +298,20 @@ export default function useMediaPicker({
     return cropParams ? openCropper : openMediaDialog;
   }, [cropParams, openCropper, openMediaDialog]);
 }
+
+useMediaPicker.propTypes = {
+  title: PropTypes.string,
+  buttonInsertText: PropTypes.string,
+  onSelect: PropTypes.func.isRequired,
+  onSelectErrorMessage: PropTypes.string,
+  onClose: PropTypes.func,
+  onPermissionError: PropTypes.func,
+  type: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
+  cropParams: PropTypes.object,
+  multiple: PropTypes.bool,
+};
+
+export default useMediaPicker;

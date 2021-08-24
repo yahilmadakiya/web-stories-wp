@@ -366,7 +366,7 @@ function MediaPane(props) {
                       onSelect={onSelect}
                       onSelectErrorMessage={onSelectErrorMessage}
                       onClose={onClose}
-                      allowedMimeTypes={allowedMimeTypes}
+                      type={allowedMimeTypes}
                       onPermissionError={() => setIsPermissionDialogOpen(true)}
                       render={(open) => (
                         <Button
@@ -389,7 +389,7 @@ function MediaPane(props) {
                 onSelect={onSelect}
                 onSelectErrorMessage={onSelectErrorMessage}
                 onClose={onClose}
-                allowedMimeTypes={allowedMimeTypes}
+                type={allowedMimeTypes}
                 onPermissionError={() => setIsPermissionDialogOpen(true)}
                 render={(open) => (
                   <Button
