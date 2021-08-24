@@ -16,7 +16,7 @@
 /**
  * External dependencies
  */
-import { flatternFormData } from '@web-stories-wp/story-editor';
+import { flattenFormData } from '@web-stories-wp/story-editor';
 /**
  * WordPress dependencies
  */
@@ -34,7 +34,7 @@ export function saveMetaBoxes(metaBoxes, story, formData) {
   ].filter(Boolean);
 
   Object.entries(additionalData).forEach(([key, value]) =>
-    flatternFormData(formData, key, value)
+    flattenFormData(formData, key, value)
   );
 
   return apiFetch({

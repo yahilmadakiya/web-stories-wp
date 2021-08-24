@@ -17,7 +17,7 @@
  * External dependencies
  */
 import { addQueryArgs } from '@web-stories-wp/design-system';
-import { flatternFormData } from '@web-stories-wp/story-editor';
+import { flattenFormData } from '@web-stories-wp/story-editor';
 
 /**
  * WordPress dependencies
@@ -94,7 +94,7 @@ export function uploadMedia(media, file, additionalData) {
   const data = new window.FormData();
   data.append('file', file, file.name || file.type.replace('/', '.'));
   Object.entries(additionalData).forEach(([key, value]) =>
-    flatternFormData(data, key, value)
+    flattenFormData(data, key, value)
   );
 
   // TODO: Intercept window.fetch here to support progressive upload indicator when uploading
