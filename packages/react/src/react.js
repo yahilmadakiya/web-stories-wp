@@ -33,6 +33,7 @@ export {
   createElement,
   useImperativeHandle,
   useContext as useContextReact,
+  isValidElement,
 } from 'react';
 
 export { shallowEqual } from 'react-pure-render';

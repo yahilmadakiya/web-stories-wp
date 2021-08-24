@@ -14,30 +14,44 @@
  * limitations under the License.
  */
 /**
+ * External dependencies
+ */
+import { isValidElement } from '@web-stories-wp/react';
+
+/**
  * Internal dependencies
  */
-import { useMediaPicker } from '../useMediaPicker';
+import { useMediaPicker } from './useMediaPicker';
 
-const useFormMediaPicker = ({
+function MediaUpload({
+  render,
+  onSelect,
+  onClose,
+  onSelectErrorMessage,
+  allowedMimeTypes,
+  setIsPermissionDialogOpen,
   title,
   buttonInsertText,
-  onSelect,
-  onSelectErrorMessage,
-  type,
   cropParams,
-}) => {
-  const openMediaPicker = useMediaPicker({
-    title,
-    buttonInsertText,
+  multiple,
+}) {
+  const open = useMediaPicker({
     onSelect,
     onSelectErrorMessage,
-    type,
+    onClose,
+    type: allowedMimeTypes,
+    title,
+    buttonInsertText,
     cropParams,
+    multiple,
+    onPermissionError: () => setIsPermissionDialogOpen(true),
   });
 
-  return {
-    onClick: openMediaPicker,
-  };
-};
+  if (!render || !isValidElement(render())) {
+    return null;
+  }
 
-export default useFormMediaPicker;
+  return render(open);
+}
+
+export default MediaUpload;

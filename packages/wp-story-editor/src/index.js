@@ -39,12 +39,8 @@ import { initializeTracking } from '@web-stories-wp/tracking';
  * Internal dependencies
  */
 import * as apiConfig from './api';
-import {
-  useFormMediaPicker,
-  useCaptionMediaPicker,
-  useLibraryMediaPicker,
-} from './media';
 import './style.css'; // This way the general editor styles are loaded before all the component styles.
+import { MediaUpload } from './components';
 
 /**
  * Initializes the web stories editor.
@@ -66,11 +62,7 @@ const initialize = (id, config, flags) => {
   const editorConfig = {
     ...config,
     ...apiConfig,
-    mediaPickers: {
-      caption: useCaptionMediaPicker,
-      library: useLibraryMediaPicker,
-      form: useFormMediaPicker,
-    },
+    MediaUpload,
   };
 
   render(

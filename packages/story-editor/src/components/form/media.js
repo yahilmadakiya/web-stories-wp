@@ -18,7 +18,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useCallback, forwardRef } from '@web-stories-wp/react';
+import { forwardRef } from '@web-stories-wp/react';
 import { __ } from '@web-stories-wp/i18n';
 import styled from 'styled-components';
 import {
@@ -59,22 +59,7 @@ function MediaInput(
   },
   forwardedRef
 ) {
-  const {
-    mediaPickers: { form: formMediaPicker },
-  } = useConfig();
-
-  const formButtonProps = formMediaPicker({
-    title,
-    buttonInsertText,
-    onSelect: onChange,
-    onSelectErrorMessage: onChangeErrorText,
-    type,
-    cropParams,
-  });
-
-  // @todo Refactor code to use onClick for consistency ?
-  formButtonProps.openMediaPicker = formButtonProps.onClick;
-  delete formButtonProps.onClick;
+  const { MediaUpload } = useConfig();
 
   // Options available for the media input menu.
   const availableMenuOptions = [
@@ -92,31 +77,41 @@ function MediaInput(
           menuOptions.includes(option)
         );
 
-  const onOption = useCallback(
-    (evt, opt) => {
-      switch (opt) {
-        case 'edit':
-          formButtonProps.openMediaPicker(evt);
-          break;
-        case 'remove':
-        case 'reset':
-          onChange(null);
-          break;
-        default:
-          break;
-      }
-    },
-    [onChange, formButtonProps]
-  );
-
   return (
-    <StyledInput
-      onMenuOption={onOption}
-      menuOptions={dropdownOptions}
-      ref={forwardedRef}
-      value={value === MULTIPLE_VALUE ? null : value}
-      {...rest}
-      {...formButtonProps}
+    <MediaUpload
+      title={title}
+      buttonInsertText={buttonInsertText}
+      onSelect={onChange}
+      onSelectErrorMessage={onChangeErrorText}
+      allowedMimeTypes={type}
+      cropParams={cropParams}
+      render={(open) => {
+        // @todo Needs refactoring to use useCallback.
+        const onOption = (evt, opt) => {
+          switch (opt) {
+            case 'edit':
+              open(evt);
+              break;
+            case 'remove':
+            case 'reset':
+              onChange(null);
+              break;
+            default:
+              break;
+          }
+        };
+
+        return (
+          <StyledInput
+            onMenuOption={onOption}
+            menuOptions={dropdownOptions}
+            openMediaPicker={open}
+            ref={forwardedRef}
+            value={value === MULTIPLE_VALUE ? null : value}
+            {...rest}
+          />
+        );
+      }}
     />
   );
 }
