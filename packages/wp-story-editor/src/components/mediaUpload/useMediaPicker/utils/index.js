@@ -15,3 +15,4 @@
  */
 export { default as calculateImageSelectOptions } from './calculateImageSelectOptions';
 export { default as mustBeCropped } from './mustBeCropped';
+export { default as getResourceFromMediaPicker } from './getResourceFromMediaPicker';

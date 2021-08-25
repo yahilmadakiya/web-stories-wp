@@ -124,11 +124,11 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
   );
 
   const handleChangeTrack = useCallback(
-    (attachment) => {
+    (resource) => {
       const newTracks = {
-        track: attachment?.url,
-        trackId: attachment?.id,
-        trackName: attachment?.filename,
+        track: resource?.src,
+        trackId: resource?.id,
+        trackName: resource?.filename,
         id: uuidv4(),
         kind: 'captions',
         srclang: '',

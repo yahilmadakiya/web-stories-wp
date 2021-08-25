@@ -70,7 +70,7 @@ function VideoAccessibilityPanel({ selectedElements, pushUpdate }) {
 
   const handleChangePoster = useCallback(
     (image) => {
-      const newPoster = image?.sizes?.full?.url || image?.url;
+      const newPoster = image?.sizes?.full?.source_url || image?.src;
       if (newPoster === rawPoster) {
         return;
       }

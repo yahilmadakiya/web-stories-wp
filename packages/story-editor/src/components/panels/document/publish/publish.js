@@ -119,28 +119,30 @@ function PublishPanel() {
 
   const { allowedImageMimeTypes, allowedImageFileTypes } = useConfig();
 
+  // Used for onSelect prop in MediaUpload component.
   const handleChangePoster = useCallback(
-    (image) =>
+    (resource) =>
       updateStory({
         properties: {
           featuredMedia: {
-            id: image.id,
-            height: image.sizes?.full?.height || image.height,
-            url: image.sizes?.full?.url || image.url,
-            width: image.sizes?.full?.width || image.width,
+            id: resource.id,
+            height: resource.sizes?.full?.height || resource.height,
+            url: resource.sizes?.full?.source_url || resource.src,
+            width: resource.sizes?.full?.width || resource.width,
           },
         },
       }),
     [updateStory]
   );
 
+  // Used for onSelect prop in MediaUpload component.
   // @todo Enforce square image while selecting in Media Library.
   const handleChangePublisherLogo = useCallback(
-    (image) => {
+    (resource) => {
       updateStory({
         properties: {
-          publisherLogo: image.id,
-          publisherLogoUrl: image.sizes?.full?.url || image.url,
+          publisherLogo: resource.id,
+          publisherLogoUrl: resource.sizes?.full?.source_url || resource.src,
         },
       });
     },

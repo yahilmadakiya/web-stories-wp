@@ -27,7 +27,11 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { calculateImageSelectOptions, mustBeCropped } from './utils';
+import {
+  calculateImageSelectOptions,
+  getResourceFromMediaPicker,
+  mustBeCropped,
+} from './utils';
 
 const defaultCropParams = {
   height: 0,
@@ -134,7 +138,9 @@ function useMediaPicker({
           return;
         }
         mediaPickerEl.alt = mediaPickerEl.alt || mediaPickerEl.title;
-        onSelect(mediaPickerEl);
+        const resource = getResourceFromMediaPicker(mediaPickerEl);
+
+        onSelect(resource);
       });
 
       if (onClose) {
@@ -220,7 +226,9 @@ function useMediaPicker({
           updateMedia(attachment.id, { media_source: 'editor', alt_text });
           attachment.alt = alt_text;
         }
-        onSelect(attachment);
+
+        const resource = getResourceFromMediaPicker(attachment);
+        onSelect(resource);
       });
 
       fileFrame.once('skippedcrop', () => {
@@ -230,7 +238,9 @@ function useMediaPicker({
           .first()
           .toJSON();
         mediaPickerEl.alt = mediaPickerEl.alt || mediaPickerEl.title;
-        onSelect(mediaPickerEl);
+        const resource = getResourceFromMediaPicker(mediaPickerEl);
+
+        onSelect(resource);
       });
 
       fileFrame.once('select', () => {
@@ -255,7 +265,9 @@ function useMediaPicker({
           !control.params.flex_height
         ) {
           mediaPickerEl.alt = mediaPickerEl.alt || mediaPickerEl.title;
-          onSelect(mediaPickerEl);
+          const resource = getResourceFromMediaPicker(mediaPickerEl);
+
+          onSelect(resource);
           fileFrame.close();
         } else {
           fileFrame.setState('cropper');
