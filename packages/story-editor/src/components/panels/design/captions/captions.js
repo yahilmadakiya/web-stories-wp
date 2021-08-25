@@ -128,7 +128,7 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
       const newTracks = {
         track: resource?.src,
         trackId: resource?.id,
-        trackName: resource?.filename,
+        trackName: resource?.fileName,
         id: uuidv4(),
         kind: 'captions',
         srclang: '',
