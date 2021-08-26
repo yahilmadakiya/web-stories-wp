@@ -24,6 +24,11 @@ import { flattenFormData } from '@web-stories-wp/story-editor';
  */
 import apiFetch from '@wordpress/api-fetch';
 
+/**
+ * Internal dependencies
+ */
+import { getResourceFromAttachment } from './utils';
+
 // Important: Keep in sync with REST API preloading definition.
 export function getMedia(
   media,
@@ -71,8 +76,8 @@ export function getMedia(
     apiPath = addQueryArgs(apiPath, { cache_bust: true });
   }
 
-  return apiFetch({ path: apiPath }).then(({ body, headers }) => ({
-    data: body,
+  return apiFetch({ path: apiPath }).then(({ body: attachments, headers }) => ({
+    data: attachments.map(getResourceFromAttachment),
     headers: {
       ...headers,
       totalItems: headers['X-WP-Total'],
@@ -102,7 +107,7 @@ export function uploadMedia(media, file, additionalData) {
     path: media,
     body: data,
     method: 'POST',
-  });
+  }).then((attachment) => getResourceFromAttachment(attachment));
 }
 /**
  * Update Existing media.
