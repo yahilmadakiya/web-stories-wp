@@ -94,7 +94,7 @@ export default function useContextValueProvider(reducerState, reducerActions) {
           const hasMore = p < totalPages;
 
           callback({
-            media: data.media,
+            media: data,
             mediaType: currentMediaType,
             searchTerm: currentSearchTerm,
             pageToken: p,
