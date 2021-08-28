@@ -121,7 +121,6 @@ function createResource({
   isPlaceholder = false,
   isOptimized = false,
   isMuted = false,
-  fileName,
 }) {
   return {
     baseColor,
@@ -144,7 +143,6 @@ function createResource({
     isPlaceholder,
     isOptimized,
     isMuted,
-    fileName,
   };
 }
 

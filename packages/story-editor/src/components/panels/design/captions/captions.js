@@ -124,11 +124,11 @@ function CaptionsPanel({ selectedElements, pushUpdate }) {
   );
 
   const handleChangeTrack = useCallback(
-    (resource) => {
+    ({ src = '', id }) => {
       const newTracks = {
-        track: resource?.src,
-        trackId: resource?.id,
-        trackName: resource?.fileName,
+        track: src,
+        trackId: id,
+        trackName: src.split('/').pop(),
         id: uuidv4(),
         kind: 'captions',
         srclang: '',
