@@ -48,7 +48,6 @@ import { GlobalStyle as DefaultMoveableGlobalStyle } from './components/moveable
 import { GlobalStyle as CropMoveableGlobalStyle } from './components/moveable/cropStyle';
 import { GlobalStyle as CalendarStyle } from './components/form/dateTime/calendarStyle';
 import KeyboardOnlyOutlines from './utils/keyboardOnlyOutline';
-import { MetaBoxesProvider } from './integrations/wordpress/metaBoxes';
 
 function App({ config, children }) {
   const { storyId, isRTL } = config;
@@ -62,32 +61,30 @@ function App({ config, children }) {
                 <Media3pApiProvider>
                   <HistoryProvider size={50}>
                     <SnackbarProvider>
-                      <MetaBoxesProvider>
-                        <StoryProvider storyId={storyId}>
-                          <CurrentUserProvider>
-                            <FontProvider>
-                              <MediaProvider>
-                                <AutoSaveHandler />
-                                <TransformProvider>
-                                  <DropTargetsProvider>
-                                    <HelpCenterProvider>
-                                      <GlobalStyle />
-                                      <DevTools />
-                                      <DefaultMoveableGlobalStyle />
-                                      <CropMoveableGlobalStyle />
-                                      <ModalGlobalStyle />
-                                      <CalendarStyle />
-                                      <KeyboardOnlyOutlines />
-                                      <Layout />
-                                      {children}
-                                    </HelpCenterProvider>
-                                  </DropTargetsProvider>
-                                </TransformProvider>
-                              </MediaProvider>
-                            </FontProvider>
-                          </CurrentUserProvider>
-                        </StoryProvider>
-                      </MetaBoxesProvider>
+                      <StoryProvider storyId={storyId}>
+                        <CurrentUserProvider>
+                          <FontProvider>
+                            <MediaProvider>
+                              <AutoSaveHandler />
+                              <TransformProvider>
+                                <DropTargetsProvider>
+                                  <HelpCenterProvider>
+                                    <GlobalStyle />
+                                    <DevTools />
+                                    <DefaultMoveableGlobalStyle />
+                                    <CropMoveableGlobalStyle />
+                                    <ModalGlobalStyle />
+                                    <CalendarStyle />
+                                    <KeyboardOnlyOutlines />
+                                    <Layout />
+                                    {children}
+                                  </HelpCenterProvider>
+                                </DropTargetsProvider>
+                              </TransformProvider>
+                            </MediaProvider>
+                          </FontProvider>
+                        </CurrentUserProvider>
+                      </StoryProvider>
                     </SnackbarProvider>
                   </HistoryProvider>
                 </Media3pApiProvider>

@@ -29,7 +29,6 @@ import {
  */
 import Library from '../library';
 import Workspace from '../workspace';
-import MetaBoxes from '../../integrations/wordpress/metaBoxes';
 import {
   CANVAS_MIN_WIDTH,
   LIBRARY_MIN_WIDTH,
@@ -42,6 +41,7 @@ import { CanvasProvider } from '../../app/canvas';
 import { HighlightsProvider } from '../../app/highlights';
 import LayoutProvider from '../../app/layout/layoutProvider';
 import { ChecklistCheckpointProvider } from '../checklist';
+import { useConfig } from '../../app';
 
 const Editor = withOverlay(styled.section.attrs({
   'aria-label': __('Web Stories Editor', 'web-stories'),
@@ -85,6 +85,7 @@ function Layout() {
       placement,
     })
   );
+  const { MetaBoxes } = useConfig();
   return (
     <>
       <LayoutProvider>

@@ -24,8 +24,10 @@ import StatusCheck from './components/statusCheck';
 export * from './components/transform';
 export * from './app/config';
 export * from './app/api';
+export * from './app/story';
 export * from './components/previewPage';
 
+export { default as CircularProgress } from './components/circularProgress';
 export { default as base64Encode } from './utils/base64Encode';
 export { default as getStoryPropsToSave } from './app/story/utils/getStoryPropsToSave';
 export { default as FontContext } from './app/font/context';

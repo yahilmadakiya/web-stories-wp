@@ -13,5 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { default as MediaUpload } from './mediaUpload';
-export * from './metaBoxes';
+export { default as MetaBoxes } from './metaBoxes';
+export { default as MetaBoxesProvider } from './metaBoxesProvider';
+export { default as useMetaBoxes } from './useMetaBoxes';
