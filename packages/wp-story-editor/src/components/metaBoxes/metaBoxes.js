@@ -19,13 +19,14 @@
  */
 import styled from 'styled-components';
 import { useEffect } from '@web-stories-wp/react';
-import { useConfig } from '@web-stories-wp/story-editor';
+import { useConfig, useStory } from '@web-stories-wp/story-editor';
 
 /**
  * Internal dependencies
  */
 import MetaBoxesArea from './metaBoxesArea';
 import useMetaBoxes from './useMetaBoxes';
+import useSaveMetaBoxes from './useSaveMetaBoxes';
 
 const Wrapper = styled.div``;
 
@@ -34,6 +35,20 @@ function MetaBoxes() {
     hasMetaBoxes: state.hasMetaBoxes,
     metaBoxesVisible: state.metaBoxesVisible,
   }));
+
+  const {
+    state: { story },
+  } = useStory();
+
+  const {
+    meta: { isSavingStory, isAutoSavingStory },
+  } = story;
+
+  useSaveMetaBoxes({
+    story,
+    isSavingStory,
+    isAutoSavingStory,
+  });
 
   const { postType, metaBoxes = {} } = useConfig();
 
