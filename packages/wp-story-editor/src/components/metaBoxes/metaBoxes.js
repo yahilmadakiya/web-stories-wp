@@ -36,13 +36,14 @@ function MetaBoxes() {
     metaBoxesVisible: state.metaBoxesVisible,
   }));
 
-  const {
-    state: { story },
-  } = useStory();
-
-  const {
-    meta: { isSavingStory, isAutoSavingStory },
-  } = story;
+  const { isSavingStory, isAutoSavingStory, story } = useStory(
+    ({
+      state: {
+        meta: { isSavingStory, isAutoSavingStory },
+        story,
+      },
+    }) => ({ isSavingStory, isAutoSavingStory, story })
+  );
 
   useSaveMetaBoxes({
     story,

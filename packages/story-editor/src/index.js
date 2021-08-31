@@ -20,6 +20,7 @@
 import { default as StoryEditor } from './editorApp';
 import PostLock from './components/postLock';
 import StatusCheck from './components/statusCheck';
+import Tooltip from './components/tooltip';
 
 export * from './components/transform';
 export * from './app/config';
@@ -37,5 +38,5 @@ export { GlobalStyle } from './theme';
 export { default as theme } from './theme'; // @todo To be refactored.
 export { GlobalStyle as CropMoveableGlobalStyle } from './components/moveable/cropStyle';
 
-export { PostLock, StatusCheck };
+export { PostLock, StatusCheck, Tooltip };
 export default StoryEditor;

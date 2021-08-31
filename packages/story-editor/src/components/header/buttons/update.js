@@ -31,7 +31,6 @@ import {
  * Internal dependencies
  */
 import { useStory, useLocalMedia, useHistory } from '../../../app';
-import { useMetaBoxes } from '../../../integrations/wordpress/metaBoxes';
 import Tooltip from '../../tooltip';
 import ButtonWithChecklistWarning from './buttonWithChecklistWarning';
 
@@ -51,9 +50,6 @@ function Update() {
   const {
     state: { hasNewChanges },
   } = useHistory();
-  const { hasMetaBoxes } = useMetaBoxes(({ state }) => ({
-    hasMetaBoxes: state.hasMetaBoxes,
-  }));
 
   useGlobalKeyDownEffect(
     { key: ['mod+s'] },
@@ -70,8 +66,7 @@ function Update() {
   // The button is enabled only if we're not already saving nor uploading. And
   // then only if there are new changes or the story has meta-boxes – as these
   // can update without us knowing it.
-  const isEnabled =
-    !isSaving && !isUploading && (hasNewChanges || hasMetaBoxes);
+  const isEnabled = !isSaving && !isUploading && hasNewChanges;
   let text;
   switch (status) {
     case 'publish':
