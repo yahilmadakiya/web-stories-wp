@@ -18,7 +18,12 @@
  * External dependencies
  */
 import styled from 'styled-components';
-import { useEffect } from '@web-stories-wp/react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  createPortal,
+} from '@web-stories-wp/react';
 import { useConfig, useStory } from '@web-stories-wp/story-editor';
 
 /**
@@ -27,14 +32,16 @@ import { useConfig, useStory } from '@web-stories-wp/story-editor';
 import MetaBoxesArea from './metaBoxesArea';
 import useMetaBoxes from './useMetaBoxes';
 import useSaveMetaBoxes from './useSaveMetaBoxes';
+import MenuItem from './menuItem';
 
 const Wrapper = styled.div``;
 
 function MetaBoxes() {
-  const { metaBoxesVisible, hasMetaBoxes } = useMetaBoxes(({ state }) => ({
-    hasMetaBoxes: state.hasMetaBoxes,
-    metaBoxesVisible: state.metaBoxesVisible,
-  }));
+  const {
+    state: { metaBoxesVisible, hasMetaBoxes },
+  } = useMetaBoxes();
+  const [showMenuButton, setMenuButton] = useState(false);
+  const menuItemEl = useRef(null);
 
   const { isSavingStory, isAutoSavingStory, story } = useStory(
     ({
@@ -52,6 +59,17 @@ function MetaBoxes() {
   });
 
   const { postType, metaBoxes = {} } = useConfig();
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      menuItemEl.current = document.getElementById('primary-menu-items');
+      setMenuButton(null !== menuItemEl.current);
+    });
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
 
   useEffect(() => {
     // Allow toggling metaboxes panels.
@@ -73,18 +91,19 @@ function MetaBoxes() {
     return null;
   }
 
-  if (!metaBoxesVisible) {
-    return null;
-  }
-
   const locations = Object.keys(metaBoxes);
 
   return (
-    <Wrapper>
-      {locations.map((location) => {
-        return <MetaBoxesArea key={location} location={location} />;
-      })}
-    </Wrapper>
+    <>
+      {metaBoxesVisible && (
+        <Wrapper>
+          {locations.map((location) => {
+            return <MetaBoxesArea key={location} location={location} />;
+          })}
+        </Wrapper>
+      )}
+      {showMenuButton && createPortal(<MenuItem />, menuItemEl.current)}
+    </>
   );
 }
 

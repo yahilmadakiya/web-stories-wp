@@ -35,6 +35,10 @@ import styled from 'styled-components';
  */
 import useMetaBoxes from './useMetaBoxes';
 
+const Item = styled.div`
+  order: -1;
+`;
+
 const Space = styled.span`
   width: 8px;
 `;
@@ -48,12 +52,10 @@ const Box = styled.div`
 `;
 
 function MenuItem() {
-  const { metaBoxesVisible, toggleMetaBoxesVisible, hasMetaBoxes } =
-    useMetaBoxes(({ state, actions }) => ({
-      hasMetaBoxes: state.hasMetaBoxes,
-      metaBoxesVisible: state.metaBoxesVisible,
-      toggleMetaBoxesVisible: actions.toggleMetaBoxesVisible,
-    }));
+  const {
+    state: { metaBoxesVisible, hasMetaBoxes },
+    actions: { toggleMetaBoxesVisible },
+  } = useMetaBoxes();
 
   const handleMetaBoxesClick = useCallback(() => {
     toggleMetaBoxesVisible();
@@ -67,7 +69,7 @@ function MenuItem() {
   }
 
   return (
-    <>
+    <Item>
       <Box>
         <Tooltip
           title={__('Third-Party Meta Boxes', 'web-stories')}
@@ -86,7 +88,7 @@ function MenuItem() {
         </Tooltip>
       </Box>
       <Space />
-    </>
+    </Item>
   );
 }
 

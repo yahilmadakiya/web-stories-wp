@@ -36,10 +36,9 @@ import useMetaBoxes from './useMetaBoxes';
  * @return {{isSavingMetaBoxes: boolean}} Metaboxes status.
  */
 function useSaveMetaBoxes({ story, isSavingStory, isAutoSavingStory }) {
-  const { hasMetaBoxes, locations } = useMetaBoxes(({ state }) => ({
-    hasMetaBoxes: state.hasMetaBoxes,
-    locations: state.locations,
-  }));
+  const {
+    state: { hasMetaBoxes, locations },
+  } = useMetaBoxes();
 
   const {
     actions: { saveMetaBoxes },
