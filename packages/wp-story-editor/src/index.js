@@ -40,7 +40,7 @@ import { initializeTracking } from '@web-stories-wp/tracking';
  */
 import * as apiConfig from './api';
 import './style.css'; // This way the general editor styles are loaded before all the component styles.
-import { MediaUpload, MetaBoxes } from './components';
+import { MediaUpload, MetaBoxes, MetaBoxesProvider } from './components';
 
 /**
  * Initializes the web stories editor.
@@ -69,10 +69,12 @@ const initialize = (id, config, flags) => {
   render(
     <FlagsProvider features={flags}>
       <StrictMode>
-        <StoryEditor config={editorConfig}>
-          <PostLock />
-          <StatusCheck />
-        </StoryEditor>
+        <MetaBoxesProvider metaBoxes={config.metaBoxes}>
+          <StoryEditor config={editorConfig}>
+            <PostLock />
+            <StatusCheck />
+          </StoryEditor>
+        </MetaBoxesProvider>
       </StrictMode>
     </FlagsProvider>,
     appElement

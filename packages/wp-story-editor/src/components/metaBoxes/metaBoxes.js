@@ -37,9 +37,10 @@ import MenuItem from './menuItem';
 const Wrapper = styled.div``;
 
 function MetaBoxes() {
-  const {
-    state: { metaBoxesVisible, hasMetaBoxes },
-  } = useMetaBoxes();
+  const { metaBoxesVisible, hasMetaBoxes } = useMetaBoxes(({ state }) => ({
+    hasMetaBoxes: state.hasMetaBoxes,
+    metaBoxesVisible: state.metaBoxesVisible,
+  }));
   const [showMenuButton, setMenuButton] = useState(false);
   const menuItemEl = useRef(null);
 

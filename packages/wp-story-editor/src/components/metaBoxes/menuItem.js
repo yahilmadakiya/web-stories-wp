@@ -52,10 +52,12 @@ const Box = styled.div`
 `;
 
 function MenuItem() {
-  const {
-    state: { metaBoxesVisible, hasMetaBoxes },
-    actions: { toggleMetaBoxesVisible },
-  } = useMetaBoxes();
+  const { metaBoxesVisible, hasMetaBoxes, toggleMetaBoxesVisible } =
+    useMetaBoxes(({ state, actions }) => ({
+      hasMetaBoxes: state.hasMetaBoxes,
+      metaBoxesVisible: state.metaBoxesVisible,
+      toggleMetaBoxesVisible: actions.toggleMetaBoxesVisible,
+    }));
 
   const handleMetaBoxesClick = useCallback(() => {
     toggleMetaBoxesVisible();

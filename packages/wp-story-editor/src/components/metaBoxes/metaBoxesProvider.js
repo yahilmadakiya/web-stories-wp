@@ -19,16 +19,13 @@
  */
 import PropTypes from 'prop-types';
 import { useCallback, useMemo, useState } from '@web-stories-wp/react';
-import { useConfig } from '@web-stories-wp/story-editor';
 
 /**
  * Internal dependencies
  */
 import Context from './context';
 
-function MetaBoxesProvider({ children }) {
-  const { metaBoxes = {} } = useConfig();
-
+function MetaBoxesProvider({ children, metaBoxes }) {
   const [metaBoxesVisible, setMetaBoxesVisible] = useState(false);
   const toggleMetaBoxesVisible = useCallback(
     () => setMetaBoxesVisible((visible) => !visible),
@@ -67,6 +64,7 @@ function MetaBoxesProvider({ children }) {
 
 MetaBoxesProvider.propTypes = {
   children: PropTypes.node,
+  metaBoxes: PropTypes.object.isRequired,
 };
 
 export default MetaBoxesProvider;

@@ -17,48 +17,14 @@
 /**
  * External dependencies
  */
-import { useCallback, useMemo, useState } from '@web-stories-wp/react';
-
+import { identity, useContextSelector } from '@web-stories-wp/react';
 /**
  * Internal dependencies
  */
-import { useConfig } from '@web-stories-wp/story-editor';
+import Context from './context';
 
-function useMetaBoxes() {
-  const { metaBoxes = {} } = useConfig();
-
-  const [metaBoxesVisible, setMetaBoxesVisible] = useState(false);
-  const toggleMetaBoxesVisible = useCallback(
-    () => setMetaBoxesVisible((visible) => !visible),
-    [setMetaBoxesVisible]
-  );
-
-  const hasMetaBoxes = Object.keys(metaBoxes).some((location) =>
-    Boolean(metaBoxes[location]?.length)
-  );
-
-  const locations = Object.keys(metaBoxes);
-
-  return useMemo(
-    () => ({
-      state: {
-        metaBoxesVisible,
-        metaBoxes,
-        locations,
-        hasMetaBoxes,
-      },
-      actions: {
-        toggleMetaBoxesVisible,
-      },
-    }),
-    [
-      metaBoxesVisible,
-      toggleMetaBoxesVisible,
-      metaBoxes,
-      locations,
-      hasMetaBoxes,
-    ]
-  );
+function useMetaBoxes(selector) {
+  return useContextSelector(Context, selector ?? identity);
 }
 
 export default useMetaBoxes;
