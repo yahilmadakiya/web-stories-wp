@@ -38,7 +38,6 @@ function APIProvider({ children }) {
       link,
       users,
       statusCheck,
-      metaBoxes,
       currentUser,
       storyLocking,
       pageTemplates: customPageTemplates,
@@ -58,7 +57,6 @@ function APIProvider({ children }) {
     getAuthors,
     getCurrentUser,
     updateCurrentUser,
-    saveMetaBoxes,
     getStatusCheck,
     getCustomPageTemplates,
     addPageTemplate,
@@ -199,11 +197,6 @@ function APIProvider({ children }) {
     (data) =>
       updateCurrentUser ? updateCurrentUser(data, currentUser) : undefined,
     [currentUser, updateCurrentUser]
-  );
-  actions.saveMetaBoxes = useCallback(
-    (story, formData) =>
-      saveMetaBoxes ? saveMetaBoxes(metaBoxes, story, formData) : undefined,
-    [metaBoxes, saveMetaBoxes]
   );
   actions.getStatusCheck = useCallback(
     (content) =>

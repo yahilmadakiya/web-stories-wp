@@ -85,7 +85,7 @@ function Layout() {
       placement,
     })
   );
-  const { MetaBoxes } = useConfig();
+  const { MetaBoxes } = useConfig(); // @todo Use React portal instead of getting meta-boxes from config.
   return (
     <>
       <LayoutProvider>
