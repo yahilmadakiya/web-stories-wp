@@ -36,9 +36,10 @@ import useMetaBoxes from './useMetaBoxes';
  * @return {{isSavingMetaBoxes: boolean}} Metaboxes status.
  */
 function useSaveMetaBoxes({ story, isSavingStory, isAutoSavingStory }) {
-  const { hasMetaBoxes, locations } = useMetaBoxes(({ state }) => ({
+  const { hasMetaBoxes, locations, apiUrl } = useMetaBoxes(({ state }) => ({
     hasMetaBoxes: state.hasMetaBoxes,
     locations: state.locations,
+    apiUrl: state.apiUrl,
   }));
 
   const [isSavingMetaBoxes, setIsSavingMetaBoxes] = useState(false);
@@ -87,7 +88,7 @@ function useSaveMetaBoxes({ story, isSavingStory, isAutoSavingStory }) {
       }, new global.FormData());
 
       setIsSavingMetaBoxes(true);
-      await saveMetaBoxes(story, formData);
+      await saveMetaBoxes(apiUrl, story, formData);
       setIsSavingMetaBoxes(false);
     }
 
@@ -101,6 +102,7 @@ function useSaveMetaBoxes({ story, isSavingStory, isAutoSavingStory }) {
     wasAutoSaving,
     isSavingMetaBoxes,
     locations,
+    apiUrl,
   ]);
 
   return {

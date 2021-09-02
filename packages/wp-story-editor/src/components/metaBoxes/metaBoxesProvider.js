@@ -25,7 +25,7 @@ import { useCallback, useMemo, useState } from '@web-stories-wp/react';
  */
 import Context from './context';
 
-function MetaBoxesProvider({ children, metaBoxes }) {
+function MetaBoxesProvider({ children, metaBoxes, apiUrl }) {
   const [metaBoxesVisible, setMetaBoxesVisible] = useState(false);
   const toggleMetaBoxesVisible = useCallback(
     () => setMetaBoxesVisible((visible) => !visible),
@@ -45,6 +45,7 @@ function MetaBoxesProvider({ children, metaBoxes }) {
         metaBoxes,
         locations,
         hasMetaBoxes,
+        apiUrl,
       },
       actions: {
         toggleMetaBoxesVisible,
@@ -56,6 +57,7 @@ function MetaBoxesProvider({ children, metaBoxes }) {
       metaBoxes,
       locations,
       hasMetaBoxes,
+      apiUrl,
     ]
   );
 
@@ -65,6 +67,7 @@ function MetaBoxesProvider({ children, metaBoxes }) {
 MetaBoxesProvider.propTypes = {
   children: PropTypes.node,
   metaBoxes: PropTypes.object.isRequired,
+  apiUrl: PropTypes.string.isRequired,
 };
 
 export default MetaBoxesProvider;

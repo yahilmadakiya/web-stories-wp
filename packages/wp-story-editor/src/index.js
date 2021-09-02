@@ -69,7 +69,10 @@ const initialize = (id, config, flags) => {
   render(
     <FlagsProvider features={flags}>
       <StrictMode>
-        <MetaBoxesProvider metaBoxes={config.metaBoxes}>
+        <MetaBoxesProvider
+          metaBoxes={config.metaBoxes}
+          apiUrl={config.api.metaBoxes}
+        >
           <StoryEditor config={editorConfig}>
             <PostLock />
             <StatusCheck />
