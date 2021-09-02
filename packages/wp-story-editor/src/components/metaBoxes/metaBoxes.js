@@ -41,8 +41,8 @@ function MetaBoxes() {
     hasMetaBoxes: state.hasMetaBoxes,
     metaBoxesVisible: state.metaBoxesVisible,
   }));
-  const [showMenuButton, setMenuButton] = useState(false);
-  const menuItemEl = useRef(null);
+  const [showMenuButton, updateMenuButtonState] = useState(false);
+  const menuButtonContainer = useRef(null);
 
   const { isSavingStory, isAutoSavingStory, story } = useStory(
     ({
@@ -63,8 +63,9 @@ function MetaBoxes() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      menuItemEl.current = document.getElementById('primary-menu-items');
-      setMenuButton(null !== menuItemEl.current);
+      menuButtonContainer.current =
+        document.getElementById('primary-menu-items');
+      updateMenuButtonState(null !== menuButtonContainer.current);
     });
 
     return () => {
@@ -103,7 +104,8 @@ function MetaBoxes() {
           })}
         </Wrapper>
       )}
-      {showMenuButton && createPortal(<MenuItem />, menuItemEl.current)}
+      {showMenuButton &&
+        createPortal(<MenuItem />, menuButtonContainer.current)}
     </>
   );
 }
