@@ -27,6 +27,7 @@ import Context from './context';
 
 function MetaBoxesProvider({ children, metaBoxes, apiUrl }) {
   const [metaBoxesVisible, setMetaBoxesVisible] = useState(false);
+  const [isSavingMetaBoxes, setIsSavingMetaBoxes] = useState(false);
   const toggleMetaBoxesVisible = useCallback(
     () => setMetaBoxesVisible((visible) => !visible),
     [setMetaBoxesVisible]
@@ -41,6 +42,7 @@ function MetaBoxesProvider({ children, metaBoxes, apiUrl }) {
   const state = useMemo(
     () => ({
       state: {
+        isSavingMetaBoxes,
         metaBoxesVisible,
         metaBoxes,
         locations,
@@ -48,11 +50,14 @@ function MetaBoxesProvider({ children, metaBoxes, apiUrl }) {
         apiUrl,
       },
       actions: {
+        setIsSavingMetaBoxes,
         toggleMetaBoxesVisible,
       },
     }),
     [
+      isSavingMetaBoxes,
       metaBoxesVisible,
+      setIsSavingMetaBoxes,
       toggleMetaBoxesVisible,
       metaBoxes,
       locations,

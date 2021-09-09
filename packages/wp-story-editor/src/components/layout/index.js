@@ -44,13 +44,13 @@ function Layout() {
   } = useConfig();
 
   return (
-    <InterfaceSkeleton header={<Header />}>
-      <MetaBoxesProvider metaBoxes={metaBoxes} apiUrl={apiUrl}>
+    <MetaBoxesProvider metaBoxes={metaBoxes} apiUrl={apiUrl}>
+      <InterfaceSkeleton header={<Header />}>
         <MetaBoxesArea>
           <MetaBoxes />
         </MetaBoxesArea>
-      </MetaBoxesProvider>
-    </InterfaceSkeleton>
+      </InterfaceSkeleton>
+    </MetaBoxesProvider>
   );
 }
 

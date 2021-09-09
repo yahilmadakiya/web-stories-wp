@@ -26,6 +26,7 @@ import {
   useGlobalKeyDownEffect,
   Icons,
 } from '@web-stories-wp/design-system';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
@@ -34,7 +35,7 @@ import { useStory, useLocalMedia, useHistory } from '../../../app';
 import Tooltip from '../../tooltip';
 import ButtonWithChecklistWarning from './buttonWithChecklistWarning';
 
-function Update() {
+function Update({ hasUpdates }) {
   const { isSaving, status, saveStory } = useStory(
     ({
       state: {
@@ -64,9 +65,9 @@ function Update() {
   );
 
   // The button is enabled only if we're not already saving nor uploading. And
-  // then only if there are new changes or the story has meta-boxes – as these
+  // then only if there are new changes or we force enable the button from outside – as these
   // can update without us knowing it.
-  const isEnabled = !isSaving && !isUploading && hasNewChanges;
+  const isEnabled = !isSaving && !isUploading && (hasNewChanges || hasUpdates);
   let text;
   switch (status) {
     case 'publish':
@@ -102,5 +103,13 @@ function Update() {
     />
   );
 }
+
+Update.defaultProps = {
+  hasUpdates: false,
+};
+
+Update.propTypes = {
+  hasUpdates: PropTypes.bool,
+};
 
 export default Update;

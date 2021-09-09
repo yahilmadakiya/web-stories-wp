@@ -28,6 +28,11 @@ import {
   useStory,
 } from '@web-stories-wp/story-editor';
 
+/**
+ * Internal dependencies
+ */
+import useMetaBoxes from '../../metaBoxes/useMetaBoxes';
+
 const ButtonList = styled.nav`
   display: flex;
   justify-content: flex-end;
@@ -54,8 +59,12 @@ const IconWithSpinner = styled.div`
 `;
 
 function Loading() {
+  const { isSavingMetaBoxes } = useMetaBoxes(({ state }) => ({
+    isSavingMetaBoxes: state.isSavingMetaBoxes,
+  }));
+
   const { isSaving } = useStory((state) => ({
-    isSaving: state.state.meta.isSaving,
+    isSaving: state.state.meta.isSaving || isSavingMetaBoxes,
   }));
   return (
     isSaving && (
@@ -80,6 +89,9 @@ function Buttons() {
       isFreshlyPublished,
     })
   );
+  const { hasMetaBoxes } = useMetaBoxes(({ state }) => ({
+    hasMetaBoxes: state.hasMetaBoxes,
+  }));
   const [showDialog, setShowDialog] = useState(false);
   useEffect(
     () => setShowDialog(Boolean(isFreshlyPublished)),
@@ -97,10 +109,14 @@ function Buttons() {
             <Loading />
           </IconWithSpinner>
           <Space />
-          {isDraft ? <UpdateButton /> : <SwitchToDraftButton />}
+          {isDraft ? (
+            <UpdateButton hasUpdates={hasMetaBoxes} />
+          ) : (
+            <SwitchToDraftButton />
+          )}
           <Space />
           {isDraft && <PublishButton />}
-          {!isDraft && <UpdateButton />}
+          {!isDraft && <UpdateButton hasUpdates={hasMetaBoxes} />}
           <Space />
         </List>
       </ButtonList>
