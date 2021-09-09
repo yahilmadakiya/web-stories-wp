@@ -16,12 +16,7 @@
 /**
  * External dependencies
  */
-import {
-  InterfaceSkeleton,
-  PostLock,
-  StatusCheck,
-  useConfig,
-} from '@web-stories-wp/story-editor';
+import { InterfaceSkeleton, useConfig } from '@web-stories-wp/story-editor';
 import styled from 'styled-components';
 /**
  * Internal dependencies
@@ -49,17 +44,13 @@ function Layout() {
   } = useConfig();
 
   return (
-    <>
-      <InterfaceSkeleton header={<Header />}>
-        <MetaBoxesProvider metaBoxes={metaBoxes} apiUrl={apiUrl}>
-          <MetaBoxesArea>
-            <MetaBoxes />
-          </MetaBoxesArea>
-        </MetaBoxesProvider>
-      </InterfaceSkeleton>
-      <PostLock />
-      <StatusCheck />
-    </>
+    <InterfaceSkeleton header={<Header />}>
+      <MetaBoxesProvider metaBoxes={metaBoxes} apiUrl={apiUrl}>
+        <MetaBoxesArea>
+          <MetaBoxes />
+        </MetaBoxesArea>
+      </MetaBoxesProvider>
+    </InterfaceSkeleton>
   );
 }
 

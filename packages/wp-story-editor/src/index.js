@@ -25,7 +25,10 @@ import './publicPath';
 /**
  * External dependencies
  */
-import StoryEditor from '@web-stories-wp/story-editor';
+import StoryEditor, {
+  PostLock,
+  StatusCheck,
+} from '@web-stories-wp/story-editor';
 import { setAppElement } from '@web-stories-wp/design-system';
 import { StrictMode, render } from '@web-stories-wp/react';
 import { FlagsProvider } from 'flagged';
@@ -67,6 +70,8 @@ const initialize = (id, config, flags) => {
       <StrictMode>
         <StoryEditor config={editorConfig}>
           <Layout />
+          <PostLock />
+          <StatusCheck />
         </StoryEditor>
       </StrictMode>
     </FlagsProvider>,
