@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Title from './title';
-import Preview from './buttons/preview';
-import Update from './buttons/update';
-import Publish from './buttons/publish';
-import SwitchToDraft from './buttons/switchToDraft';
-import PostPublishDialog from './postPublishDialog';
-
-export {
-  Title as HeaderTitle,
-  Preview as PreviewButton,
-  Update as UpdateButton,
-  Publish as PublishButton,
-  SwitchToDraft as SwitchToDraftButton,
-  PostPublishDialog,
-};
+export { default as PreviewButton } from './buttons/preview';
+export { default as UpdateButton } from './buttons/update';
+export { default as PublishButton } from './buttons/publish';
+export { default as SwitchToDraftButton } from './buttons/switchToDraft';
+export { default as PostPublishDialog } from './postPublishDialog';
+export { default as HeaderTitle } from './title';

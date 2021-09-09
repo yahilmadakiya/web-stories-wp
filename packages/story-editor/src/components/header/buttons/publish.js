@@ -31,7 +31,7 @@ import ButtonWithChecklistWarning from './buttonWithChecklistWarning';
 
 const TRANSITION_DURATION = 300;
 
-function Publish() {
+function PublishButton() {
   const { isSaving, date, storyId, saveStory, title, editLink, capabilities } =
     useStory(
       ({
@@ -135,4 +135,4 @@ function Publish() {
   );
 }
 
-export default Publish;
+export default PublishButton;

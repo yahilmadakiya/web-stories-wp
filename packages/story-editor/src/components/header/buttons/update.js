@@ -35,7 +35,7 @@ import { useStory, useLocalMedia, useHistory } from '../../../app';
 import Tooltip from '../../tooltip';
 import ButtonWithChecklistWarning from './buttonWithChecklistWarning';
 
-function Update({ hasUpdates }) {
+function UpdateButton({ hasUpdates }) {
   const { isSaving, status, saveStory } = useStory(
     ({
       state: {
@@ -104,12 +104,12 @@ function Update({ hasUpdates }) {
   );
 }
 
-Update.defaultProps = {
+UpdateButton.defaultProps = {
   hasUpdates: false,
 };
 
-Update.propTypes = {
+UpdateButton.propTypes = {
   hasUpdates: PropTypes.bool,
 };
 
-export default Update;
+export default UpdateButton;
