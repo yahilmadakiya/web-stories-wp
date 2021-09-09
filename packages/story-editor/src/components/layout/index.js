@@ -18,6 +18,7 @@
  * External dependencies
  */
 import styled from 'styled-components';
+import Proptypes from 'prop-types';
 import { __ } from '@web-stories-wp/i18n';
 import {
   Snackbar,
@@ -41,7 +42,6 @@ import { CanvasProvider } from '../../app/canvas';
 import { HighlightsProvider } from '../../app/highlights';
 import LayoutProvider from '../../app/layout/layoutProvider';
 import { ChecklistCheckpointProvider } from '../checklist';
-import { useConfig } from '../../app';
 
 const Editor = withOverlay(styled.section.attrs({
   'aria-label': __('Web Stories Editor', 'web-stories'),
@@ -71,13 +71,7 @@ const Area = styled.div`
   z-index: 2;
 `;
 
-const MetaBoxesArea = styled(Area).attrs({
-  area: 'metaboxes',
-})`
-  overflow-y: auto;
-`;
-
-function Layout() {
+function Layout({ children }) {
   const snackbarState = useSnackbar(
     ({ removeSnack, currentSnacks, placement }) => ({
       onRemove: removeSnack,
@@ -85,7 +79,6 @@ function Layout() {
       placement,
     })
   );
-  const { MetaBoxes } = useConfig(); // @todo Use filter hook or React portal instead of getting meta-boxes from config.
   return (
     <>
       <LayoutProvider>
@@ -98,9 +91,7 @@ function Layout() {
                 </Area>
                 <Workspace />
               </CanvasProvider>
-              <MetaBoxesArea>
-                <MetaBoxes />
-              </MetaBoxesArea>
+              {children}
             </Editor>
           </HighlightsProvider>
         </ChecklistCheckpointProvider>
@@ -109,5 +100,9 @@ function Layout() {
     </>
   );
 }
+
+Layout.propTypes = {
+  children: Proptypes.node,
+};
 
 export default Layout;

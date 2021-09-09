@@ -25,10 +25,7 @@ import './publicPath';
 /**
  * External dependencies
  */
-import StoryEditor, {
-  PostLock,
-  StatusCheck,
-} from '@web-stories-wp/story-editor';
+import StoryEditor from '@web-stories-wp/story-editor';
 import { setAppElement } from '@web-stories-wp/design-system';
 import { StrictMode, render } from '@web-stories-wp/react';
 import { FlagsProvider } from 'flagged';
@@ -40,7 +37,7 @@ import { initializeTracking } from '@web-stories-wp/tracking';
  */
 import * as apiConfig from './api';
 import './style.css'; // This way the general editor styles are loaded before all the component styles.
-import { MediaUpload, MetaBoxes, MetaBoxesProvider } from './components';
+import { Layout, MediaUpload } from './components';
 
 /**
  * Initializes the web stories editor.
@@ -63,21 +60,14 @@ const initialize = (id, config, flags) => {
     ...config,
     ...apiConfig,
     MediaUpload,
-    MetaBoxes,
   };
 
   render(
     <FlagsProvider features={flags}>
       <StrictMode>
-        <MetaBoxesProvider
-          metaBoxes={config.metaBoxes}
-          apiUrl={config.api.metaBoxes}
-        >
-          <StoryEditor config={editorConfig}>
-            <PostLock />
-            <StatusCheck />
-          </StoryEditor>
-        </MetaBoxesProvider>
+        <StoryEditor config={editorConfig}>
+          <Layout />
+        </StoryEditor>
       </StrictMode>
     </FlagsProvider>,
     appElement

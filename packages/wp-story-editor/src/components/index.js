@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 export { default as MediaUpload } from './mediaUpload';
+export { default as Layout } from './layout';
 export * from './metaBoxes';

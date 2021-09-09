@@ -42,7 +42,6 @@ import AutoSaveHandler from './components/autoSaveHandler';
 import { TransformProvider } from './components/transform';
 import { DropTargetsProvider } from './components/dropTargets';
 import { HelpCenterProvider } from './app/helpCenter';
-import Layout from './components/layout';
 import DevTools from './components/devTools';
 import { GlobalStyle as DefaultMoveableGlobalStyle } from './components/moveable/moveStyle';
 import { GlobalStyle as CropMoveableGlobalStyle } from './components/moveable/cropStyle';
@@ -76,7 +75,6 @@ function App({ config, children }) {
                                     <ModalGlobalStyle />
                                     <CalendarStyle />
                                     <KeyboardOnlyOutlines />
-                                    <Layout />
                                     {children}
                                   </HelpCenterProvider>
                                 </DropTargetsProvider>
