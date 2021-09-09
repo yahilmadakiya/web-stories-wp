@@ -14,4 +14,21 @@
  * limitations under the License.
  */
 
-export { default } from './headerLayout';
+/**
+ * Internal dependencies
+ */
+import Title from './title';
+import Preview from './buttons/preview';
+import Update from './buttons/update';
+import Publish from './buttons/publish';
+import SwitchToDraft from './buttons/switchToDraft';
+import PostPublishDialog from './postPublishDialog';
+
+export {
+  Title as HeaderTitle,
+  Preview as PreviewButton,
+  Update as UpdateButton,
+  Publish as PublishButton,
+  SwitchToDraft as SwitchToDraftButton,
+  PostPublishDialog,
+};

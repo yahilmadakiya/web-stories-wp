@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import Inspector from '../inspector';
@@ -23,12 +28,12 @@ import { RichTextProvider } from '../richText';
 import ErrorBoundary from '../errorBoundary';
 import { CanvasArea, InspectorArea } from './layout';
 
-function Workspace() {
+function Workspace({ header }) {
   return (
     <RichTextProvider>
       <CanvasArea>
         <ErrorBoundary>
-          <Canvas />
+          <Canvas header={header} />
         </ErrorBoundary>
       </CanvasArea>
       <InspectorArea>
@@ -39,5 +44,9 @@ function Workspace() {
     </RichTextProvider>
   );
 }
+
+Workspace.propTypes = {
+  header: PropTypes.node,
+};
 
 export default Workspace;

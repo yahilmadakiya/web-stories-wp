@@ -27,6 +27,7 @@ import styled from 'styled-components';
  * Internal dependencies
  */
 import { MetaBoxes, MetaBoxesProvider } from '../metaBoxes';
+import Header from '../header';
 
 const Area = styled.div`
   grid-area: ${({ area }) => area};
@@ -49,7 +50,7 @@ function Layout() {
 
   return (
     <>
-      <InterfaceSkeleton>
+      <InterfaceSkeleton header={<Header />}>
         <MetaBoxesProvider metaBoxes={metaBoxes} apiUrl={apiUrl}>
           <MetaBoxesArea>
             <MetaBoxes />

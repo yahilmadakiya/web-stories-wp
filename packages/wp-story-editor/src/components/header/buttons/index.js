@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * External dependencies
  */
 import styled from 'styled-components';
 import { useState, useEffect } from '@web-stories-wp/react';
-
-/**
- * Internal dependencies
- */
-import { useStory } from '../../../app';
-import CircularProgress from '../../circularProgress';
-import PostPublishDialog from '../postPublishDialog';
-import Preview from './preview';
-import SwitchToDraft from './switchToDraft';
-import Update from './update';
-import Publish from './publish';
+import {
+  PreviewButton,
+  UpdateButton,
+  PublishButton,
+  SwitchToDraftButton,
+  PostPublishDialog, // @todo this will be removed from here in the upcoming PRs.
+  CircularProgress,
+  useStory,
+} from '@web-stories-wp/story-editor';
 
 const ButtonList = styled.nav`
   display: flex;
@@ -96,14 +93,14 @@ function Buttons() {
       <ButtonList>
         <List>
           <IconWithSpinner>
-            <Preview />
+            <PreviewButton />
             <Loading />
           </IconWithSpinner>
           <Space />
-          {isDraft ? <Update /> : <SwitchToDraft />}
+          {isDraft ? <UpdateButton /> : <SwitchToDraftButton />}
           <Space />
-          {isDraft && <Publish />}
-          {!isDraft && <Update />}
+          {isDraft && <PublishButton />}
+          {!isDraft && <UpdateButton />}
           <Space />
         </List>
       </ButtonList>
@@ -116,4 +113,5 @@ function Buttons() {
     </>
   );
 }
+
 export default Buttons;

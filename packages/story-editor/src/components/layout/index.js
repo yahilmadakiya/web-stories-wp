@@ -71,7 +71,7 @@ const Area = styled.div`
   z-index: 2;
 `;
 
-function Layout({ children }) {
+function Layout({ children, header }) {
   const snackbarState = useSnackbar(
     ({ removeSnack, currentSnacks, placement }) => ({
       onRemove: removeSnack,
@@ -89,7 +89,7 @@ function Layout({ children }) {
                 <Area area="lib">
                   <Library />
                 </Area>
-                <Workspace />
+                <Workspace header={header} />
               </CanvasProvider>
               {children}
             </Editor>
@@ -103,6 +103,7 @@ function Layout({ children }) {
 
 Layout.propTypes = {
   children: Proptypes.node,
+  header: Proptypes.node,
 };
 
 export default Layout;
