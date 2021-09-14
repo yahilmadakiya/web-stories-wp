@@ -63,6 +63,19 @@ PageTemplateWrapper.propTypes = {
   translateX: PropTypes.number.isRequired,
 };
 
+const PosterWrapper = styled.div`
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 2px solid red;
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 1px solid salmon;
+  }
+`;
+
 const PreviewPageWrapper = styled.div`
   height: ${({ pageSize }) => pageSize.containerHeight}px;
   width: ${({ pageSize }) => pageSize.width}px;
@@ -136,33 +149,40 @@ function PageTemplate(
       isHighlighted={page.id === highlightedTemplate}
       {...rest}
     >
-      <PreviewPageWrapper pageSize={pageSize}>
-        <PreviewErrorBoundary>
-          <PreviewPage
-            pageSize={pageSize}
-            page={page}
-            animationState={
-              isActivePage
-                ? STORY_ANIMATION_STATE.PLAYING
-                : STORY_ANIMATION_STATE.RESET
-            }
-          />
-        </PreviewErrorBoundary>
-        {isActivePage && handleDelete && (
-          <ButtonWrapper>
-            <Button
-              variant={BUTTON_VARIANTS.CIRCLE}
-              type={BUTTON_TYPES.SECONDARY}
-              size={BUTTON_SIZES.SMALL}
-              onClick={(e) => handleDelete(page, e)}
-              aria-label={__('Delete Page Template', 'web-stories')}
-            >
-              <Icons.Trash />
-            </Button>
-          </ButtonWrapper>
-        )}
-      </PreviewPageWrapper>
+      {page.webp && (
+        <PosterWrapper>
+          <img src={page.webp} alt={page.title} />
+        </PosterWrapper>
+      )}
 
+      {!page.webp && (
+        <PreviewPageWrapper pageSize={pageSize}>
+          <PreviewErrorBoundary>
+            <PreviewPage
+              pageSize={pageSize}
+              page={page}
+              animationState={
+                isActivePage
+                  ? STORY_ANIMATION_STATE.PLAYING
+                  : STORY_ANIMATION_STATE.RESET
+              }
+            />
+          </PreviewErrorBoundary>
+          {isActivePage && handleDelete && (
+            <ButtonWrapper>
+              <Button
+                variant={BUTTON_VARIANTS.CIRCLE}
+                type={BUTTON_TYPES.SECONDARY}
+                size={BUTTON_SIZES.SMALL}
+                onClick={(e) => handleDelete(page, e)}
+                aria-label={__('Delete Page Template', 'web-stories')}
+              >
+                <Icons.Trash />
+              </Button>
+            </ButtonWrapper>
+          )}
+        </PreviewPageWrapper>
+      )}
       {page.title && (
         <PageTemplateTitle isActive={isActivePage}>
           {page.title}

@@ -74,7 +74,7 @@ function DefaultTemplates({ pageSize }) {
   } = useAPI();
   const [pageTemplates, setPageTemplates] = useState([]);
   const [showTemplateImages, setShowTemplateImages] = useState(false);
-
+  console.log({ pageTemplates });
   const toggleId = useMemo(() => `toggle_page_templates_${uuidv4()}`, []);
 
   // load and process pageTemplates
@@ -108,35 +108,44 @@ function DefaultTemplates({ pageSize }) {
   const filteredPages = useMemo(
     () =>
       pageTemplates.reduce((pages, template) => {
-        const templatePages = template.pages.reduce((acc, page) => {
-          // skip unselected page template types if not matching
-          if (
-            !page.pageTemplateType ||
-            (selectedPageTemplateType &&
-              page.pageTemplateType !== selectedPageTemplateType)
-          ) {
-            return acc;
-          }
+        const templatePosters = Object.values(template.postersByPage).map(
+          (poster, index) => ({
+            id: index,
+            title: 'test',
+            ...poster,
+          })
+        );
 
-          const pageTemplateName =
-            PAGE_TEMPLATE_TYPES[page.pageTemplateType].name;
-          return [
-            ...acc,
-            {
-              ...page,
-              title: sprintf(
-                /* translators: 1: template name. 2: page template name. */
-                _x('%1$s %2$s', 'page template title', 'web-stories'),
-                template.title,
-                pageTemplateName
-              ),
-            },
-          ];
+        const templatePages = templatePosters.reduce((acc, posterByPage) => {
+          return [...acc, posterByPage];
+          // skip unselected page template types if not matching
+          // if (
+          //   !page.pageTemplateType ||
+          //   (selectedPageTemplateType &&
+          //     page.pageTemplateType !== selectedPageTemplateType)
+          // ) {
+          //   return acc;
+          // }
+
+          // const pageTemplateName =
+          //   PAGE_TEMPLATE_TYPES[page.pageTemplateType].name;
+          // return [
+          //   ...acc,
+          //   {
+          //     ...page,
+          //     title: sprintf(
+          //       /* translators: 1: template name. 2: page template name. */
+          //       _x('%1$s %2$s', 'page template title', 'web-stories'),
+          //       template.title,
+          //       pageTemplateName
+          //     ),
+          //   },
+          // ];
         }, []);
 
         return [...pages, ...templatePages];
       }, []),
-    [pageTemplates, selectedPageTemplateType]
+    [pageTemplates]
   );
 
   const handleSelectPageTemplateType = useCallback((key) => {
