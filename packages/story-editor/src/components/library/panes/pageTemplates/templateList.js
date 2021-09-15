@@ -130,67 +130,68 @@ function TemplateList({
             onKeyUp={(event) => handleKeyboardPageClick(event, page)}
             handleDelete={handleDelete}
             columnWidth={pageSize.width}
+            pageSize={pageSize}
           />
         );
       })}
     </WrapperGrid>
   );
 
-  return (
-    <UnitsProvider
-      pageSize={{
-        width: pageSize.width,
-        height: pageSize.height,
-      }}
-    >
-      <VirtualizedWrapper height={rowVirtualizer.totalSize}>
-        <VirtualizedContainer
-          height={rowVirtualizer.totalSize}
-          ref={containerRef}
-          columnWidth={pageSize.width}
-          rowHeight={pageSize.containerHeight}
-          paneLeft={PANE_PADDING}
-          onFocus={handleGridFocus}
-          role="list"
-          aria-label={__('Page Template Options', 'web-stories')}
-        >
-          {rowVirtualizer.virtualItems.map((virtualRow) =>
-            columnVirtualizer.virtualItems.map((virtualColumn) => {
-              const pageIndex = getVirtualizedItemIndex({
-                columnIndex: virtualColumn.index,
-                rowIndex: virtualRow.index,
-              });
+  // return (
+  //   <UnitsProvider
+  //     pageSize={{
+  //       width: pageSize.width,
+  //       height: pageSize.height,
+  //     }}
+  //   >
+  //     <VirtualizedWrapper height={rowVirtualizer.totalSize}>
+  //       <VirtualizedContainer
+  //         height={rowVirtualizer.totalSize}
+  //         ref={containerRef}
+  //         columnWidth={pageSize.width}
+  //         rowHeight={pageSize.containerHeight}
+  //         paneLeft={PANE_PADDING}
+  //         onFocus={handleGridFocus}
+  //         role="list"
+  //         aria-label={__('Page Template Options', 'web-stories')}
+  //       >
+  //         {rowVirtualizer.virtualItems.map((virtualRow) =>
+  //           columnVirtualizer.virtualItems.map((virtualColumn) => {
+  //             const pageIndex = getVirtualizedItemIndex({
+  //               columnIndex: virtualColumn.index,
+  //               rowIndex: virtualRow.index,
+  //             });
 
-              const page = pages[pageIndex];
+  //             const page = pages[pageIndex];
 
-              if (!page) {
-                return null;
-              }
-              const isActive = activeGridItemId === page.id && isGridFocused;
+  //             if (!page) {
+  //               return null;
+  //             }
+  //             const isActive = activeGridItemId === page.id && isGridFocused;
 
-              return (
-                <PageTemplate
-                  key={pageIndex}
-                  data-testid={`page_template_${page.id}`}
-                  ref={(el) => (pageRefs.current[page.id] = el)}
-                  translateY={virtualRow.start}
-                  translateX={virtualColumn.start}
-                  page={page}
-                  pageSize={pageSize}
-                  isActive={isActive}
-                  onFocus={() => handleGridItemFocus(page.id)}
-                  onClick={() => handlePageClick(page)}
-                  onKeyUp={(event) => handleKeyboardPageClick(event, page)}
-                  handleDelete={handleDelete}
-                  {...rest}
-                />
-              );
-            })
-          )}
-        </VirtualizedContainer>
-      </VirtualizedWrapper>
-    </UnitsProvider>
-  );
+  //             return (
+  //               <PageTemplate
+  //                 key={pageIndex}
+  //                 data-testid={`page_template_${page.id}`}
+  //                 ref={(el) => (pageRefs.current[page.id] = el)}
+  //                 translateY={virtualRow.start}
+  //                 translateX={virtualColumn.start}
+  //                 page={page}
+  //                 pageSize={pageSize}
+  //                 isActive={isActive}
+  //                 onFocus={() => handleGridItemFocus(page.id)}
+  //                 onClick={() => handlePageClick(page)}
+  //                 onKeyUp={(event) => handleKeyboardPageClick(event, page)}
+  //                 handleDelete={handleDelete}
+  //                 {...rest}
+  //               />
+  //             );
+  //           })
+  //         )}
+  //       </VirtualizedContainer>
+  //     </VirtualizedWrapper>
+  //   </UnitsProvider>
+  // );
 }
 
 TemplateList.propTypes = {

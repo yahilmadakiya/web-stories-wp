@@ -114,21 +114,21 @@ function DefaultTemplates({ pageSize }) {
             id: `${template.slug}_${index}`,
             title: template.title,
             story: template.pages[index],
+            type: template.pages[index].pageTemplateType,
             ...poster,
           })
         );
 
-        // TODO bring back filtering - need a new way to map through this
         const templatePages = templatePosters.reduce((acc, posterByPage) => {
-          return [...acc, posterByPage];
           // skip unselected page template types if not matching
-          // if (
-          //   !page.pageTemplateType ||
-          //   (selectedPageTemplateType &&
-          //     page.pageTemplateType !== selectedPageTemplateType)
-          // ) {
-          //   return acc;
-          // }
+          if (
+            !posterByPage.type ||
+            (selectedPageTemplateType &&
+              posterByPage.type !== selectedPageTemplateType)
+          ) {
+            return acc;
+          }
+          return [...acc, posterByPage];
 
           // const pageTemplateName =
           //   PAGE_TEMPLATE_TYPES[page.pageTemplateType].name;
@@ -145,10 +145,9 @@ function DefaultTemplates({ pageSize }) {
           //   },
           // ];
         }, []);
-
         return [...pages, ...templatePages];
       }, []),
-    [pageTemplates]
+    [pageTemplates, selectedPageTemplateType]
   );
 
   const handleSelectPageTemplateType = useCallback((key) => {

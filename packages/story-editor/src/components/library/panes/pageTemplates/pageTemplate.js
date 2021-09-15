@@ -47,6 +47,13 @@ const PageTemplateWrapper = styled(Button).attrs({ type: BUTTON_TYPES.PLAIN })`
   height: auto;
   width: ${({ columnWidth }) => columnWidth}px;
   border-radius: ${({ theme }) => theme.borders.radius.small};
+  padding: 0;
+  position: relative;
+`;
+
+const PosterWrapper = styled.div`
+  width: 100%;
+  height: 100%;
 `;
 
 const PosterImg = styled.img`
@@ -92,7 +99,7 @@ PageTemplateTitle.propTypes = {
 };
 
 function PageTemplate(
-  { page, isActive, columnWidth, handleDelete, ...rest },
+  { page, isActive, pageSize, columnWidth, handleDelete, ...rest },
   ref
 ) {
   const [isHover, setIsHover] = useState(false);
@@ -111,7 +118,7 @@ function PageTemplate(
   return (
     <PageTemplateWrapper
       columnWidth={columnWidth}
-      // pageSize={pageSize}
+      pageSize={pageSize}
       role="listitem"
       ref={ref}
       // Needed for custom keyboard navigation implementation.
@@ -125,11 +132,18 @@ function PageTemplate(
       isHighlighted={page.id === highlightedTemplate}
       {...rest}
     >
-      {page.webp && (
-        <PosterImg src={page.png} alt={page.title} crossOrigin="anonymous" />
-      )}
+      <PosterWrapper>
+        {page.webp && (
+          <PosterImg src={page.png} alt={page.title} crossOrigin="anonymous" />
+        )}
+        {page.title && (
+          <PageTemplateTitle isActive={isActivePage}>
+            {page.title} {page.type}
+          </PageTemplateTitle>
+        )}
+      </PosterWrapper>
 
-      {!page.webp && (
+      {/* {!page.webp && (
         <PreviewPageWrapper>
           <PreviewErrorBoundary>
             <PreviewPage
@@ -161,7 +175,7 @@ function PageTemplate(
         <PageTemplateTitle isActive={isActivePage}>
           {page.title}
         </PageTemplateTitle>
-      )}
+      )} */}
     </PageTemplateWrapper>
   );
 }
