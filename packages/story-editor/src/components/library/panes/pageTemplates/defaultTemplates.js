@@ -73,8 +73,9 @@ function DefaultTemplates({ pageSize }) {
     actions: { getPageTemplates },
   } = useAPI();
   const [pageTemplates, setPageTemplates] = useState([]);
+  // TODO, update script to run with grid and then put those screenshots here
   const [showTemplateImages, setShowTemplateImages] = useState(false);
-  console.log({ pageTemplates });
+
   const toggleId = useMemo(() => `toggle_page_templates_${uuidv4()}`, []);
 
   // load and process pageTemplates
@@ -110,12 +111,14 @@ function DefaultTemplates({ pageSize }) {
       pageTemplates.reduce((pages, template) => {
         const templatePosters = Object.values(template.postersByPage).map(
           (poster, index) => ({
-            id: index,
-            title: 'test',
+            id: `${template.slug}_${index}`,
+            title: template.title,
+            story: template.pages[index],
             ...poster,
           })
         );
 
+        // TODO bring back filtering - need a new way to map through this
         const templatePages = templatePosters.reduce((acc, posterByPage) => {
           return [...acc, posterByPage];
           // skip unselected page template types if not matching

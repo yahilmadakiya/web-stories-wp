@@ -31,7 +31,6 @@ import {
   BUTTON_SIZES,
   BUTTON_TYPES,
   BUTTON_VARIANTS,
-  themeHelpers,
   Icons,
 } from '@web-stories-wp/design-system';
 import { STORY_ANIMATION_STATE } from '@web-stories-wp/animation';
@@ -40,53 +39,29 @@ import { STORY_ANIMATION_STATE } from '@web-stories-wp/animation';
  */
 import { PageSizePropType } from '../../../../types';
 import { PreviewPage, PreviewErrorBoundary } from '../../../previewPage';
-import { focusStyle } from '../../../panels/shared';
 
-const PageTemplateWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  height: ${({ pageSize }) => pageSize.containerHeight}px;
-  width: ${({ pageSize }) => pageSize.width}px;
+const PageTemplateWrapper = styled(Button).attrs({ type: BUTTON_TYPES.PLAIN })`
   display: flex;
   flex-direction: column;
   cursor: pointer;
+  height: auto;
+  width: ${({ columnWidth }) => columnWidth}px;
   border-radius: ${({ theme }) => theme.borders.radius.small};
-  transform: ${({ translateX, translateY }) =>
-    `translateX(${translateX}px) translateY(${translateY}px)`};
-
-  ${({ isHighlighted }) => isHighlighted && themeHelpers.focusCSS};
-  ${focusStyle};
 `;
-PageTemplateWrapper.propTypes = {
-  pageSize: PageSizePropType.isRequired,
-  translateY: PropTypes.number.isRequired,
-  translateX: PropTypes.number.isRequired,
-};
 
-const PosterWrapper = styled.div`
+const PosterImg = styled.img`
   display: block;
   width: 100%;
-  height: 100%;
-  border: 2px solid red;
-  img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    border: 1px solid salmon;
-  }
+  object-fit: cover;
 `;
 
 const PreviewPageWrapper = styled.div`
-  height: ${({ pageSize }) => pageSize.containerHeight}px;
-  width: ${({ pageSize }) => pageSize.width}px;
+  /*  */
   z-index: -1;
   background-color: ${({ theme }) => theme.colors.interactiveBg.secondary};
   border-radius: ${({ theme }) => theme.borders.radius.small};
   overflow: hidden;
 `;
-PreviewPageWrapper.propTypes = {
-  pageSize: PageSizePropType.isRequired,
-};
 
 const ButtonWrapper = styled.div`
   position: absolute;
@@ -117,7 +92,7 @@ PageTemplateTitle.propTypes = {
 };
 
 function PageTemplate(
-  { page, pageSize, translateY, translateX, isActive, handleDelete, ...rest },
+  { page, isActive, columnWidth, handleDelete, ...rest },
   ref
 ) {
   const [isHover, setIsHover] = useState(false);
@@ -135,7 +110,8 @@ function PageTemplate(
 
   return (
     <PageTemplateWrapper
-      pageSize={pageSize}
+      columnWidth={columnWidth}
+      // pageSize={pageSize}
       role="listitem"
       ref={ref}
       // Needed for custom keyboard navigation implementation.
@@ -144,22 +120,20 @@ function PageTemplate(
       onMouseEnter={handleSetHoverActive}
       onMouseLeave={handleSetHoverFalse}
       aria-label={page.title}
-      translateY={translateY}
-      translateX={translateX}
+      // translateY={translateY}
+      // translateX={translateX}
       isHighlighted={page.id === highlightedTemplate}
       {...rest}
     >
       {page.webp && (
-        <PosterWrapper>
-          <img src={page.webp} alt={page.title} />
-        </PosterWrapper>
+        <PosterImg src={page.png} alt={page.title} crossOrigin="anonymous" />
       )}
 
       {!page.webp && (
-        <PreviewPageWrapper pageSize={pageSize}>
+        <PreviewPageWrapper>
           <PreviewErrorBoundary>
             <PreviewPage
-              pageSize={pageSize}
+              // pageSize={pageSize}
               page={page}
               animationState={
                 isActivePage

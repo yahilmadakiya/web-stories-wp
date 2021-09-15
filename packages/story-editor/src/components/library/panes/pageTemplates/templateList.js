@@ -17,13 +17,21 @@
 /**
  * External dependencies
  */
-import { useCallback, useMemo, useRef, useEffect } from '@web-stories-wp/react';
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useState,
+} from '@web-stories-wp/react';
 import PropTypes from 'prop-types';
 import { useVirtual } from 'react-virtual';
+import styled from 'styled-components';
 import { __ } from '@web-stories-wp/i18n';
 import { trackEvent } from '@web-stories-wp/tracking';
 import { UnitsProvider } from '@web-stories-wp/units';
-import { useSnackbar } from '@web-stories-wp/design-system';
+import { useGridViewKeys, useSnackbar } from '@web-stories-wp/design-system';
+import { v4 as uuidv4 } from 'uuid';
 /**
  * Internal dependencies
  */
@@ -39,7 +47,16 @@ import { duplicatePage } from '../../../../elements';
 import { useStory } from '../../../../app/story';
 import PageTemplate from './pageTemplate';
 
-const THRESHOLD = 6;
+const WrapperGrid = styled.div`
+  display: grid;
+  width: 100%;
+  grid-column-gap: 4px;
+  grid-row-gap: 4px;
+  grid-template-columns: ${({ columnWidth }) =>
+    `repeat(auto-fit, ${columnWidth}px)`};
+  grid-template-rows: ${({ rowHeight }) =>
+    `repeat(minmax(${rowHeight}px, 1fr))`};
+`;
 function TemplateList({
   pages,
   parentRef,
@@ -52,11 +69,9 @@ function TemplateList({
     addPage: actions.addPage,
   }));
   const { showSnackbar } = useSnackbar();
-
+  const [currentPageId, setCurrentPageId] = useState();
   const containerRef = useRef();
   const pageRefs = useRef({});
-
-  const pageIds = useMemo(() => pages.map((page) => page.id), [pages]);
 
   const handlePageClick = useCallback(
     (page) => {
@@ -73,52 +88,7 @@ function TemplateList({
     [addPage, showSnackbar]
   );
 
-  const rowsTotal = useMemo(() => Math.ceil((pages || []).length / 2), [pages]);
-
-  const rowVirtualizer = useVirtual({
-    size: rowsTotal,
-    parentRef,
-    estimateSize: useCallback(
-      () => pageSize.containerHeight + PANEL_GRID_ROW_GAP,
-      [pageSize.containerHeight]
-    ),
-    overscan: 4,
-  });
-
-  useEffect(() => {
-    if (
-      rowVirtualizer.virtualItems.length &&
-      rowsTotal &&
-      rowsTotal - THRESHOLD <
-        rowVirtualizer.virtualItems[rowVirtualizer.virtualItems.length - 1]
-          .index
-    ) {
-      fetchTemplates?.();
-    }
-  }, [rowVirtualizer, rowsTotal, fetchTemplates]);
-
-  const columnVirtualizer = useVirtual({
-    horizontal: true,
-    size: 2,
-    parentRef,
-    estimateSize: useCallback(
-      () => pageSize.width + PANEL_GRID_ROW_GAP,
-      [pageSize.width]
-    ),
-    overscan: 0,
-  });
-
-  const {
-    activeGridItemId,
-    handleGridFocus,
-    handleGridItemFocus,
-    isGridFocused,
-  } = useVirtualizedGridNavigation({
-    rowVirtualizer,
-    containerRef,
-    gridItemRefs: pageRefs,
-    gridItemIds: pageIds,
-  });
+  const isGridFocused = false;
 
   const handleKeyboardPageClick = useCallback(
     ({ code }, page) => {
@@ -131,6 +101,39 @@ function TemplateList({
       }
     },
     [isGridFocused, handlePageClick, handleDelete]
+  );
+
+  useGridViewKeys({
+    containerRef: parentRef,
+    gridRef: containerRef,
+    itemRefs: pageRefs,
+    items: pages,
+    currentItemId: currentPageId,
+  });
+  return (
+    <WrapperGrid
+      ref={containerRef}
+      columnWidth={pageSize.width}
+      rowHeight={pageSize.containerHeight}
+    >
+      {pages.map((page) => {
+        return (
+          <PageTemplate
+            key={uuidv4()}
+            data-testid={`page_template_${page.id}`}
+            ref={(el) => (pageRefs.current[page.id] = el)}
+            page={page}
+            onFocus={() => {
+              setCurrentPageId(page.id);
+            }}
+            onClick={() => handlePageClick(page.story)}
+            onKeyUp={(event) => handleKeyboardPageClick(event, page)}
+            handleDelete={handleDelete}
+            columnWidth={pageSize.width}
+          />
+        );
+      })}
+    </WrapperGrid>
   );
 
   return (
