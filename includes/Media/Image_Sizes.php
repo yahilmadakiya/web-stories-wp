@@ -87,6 +87,7 @@ class Image_Sizes extends Service_Base {
 	public function register() {
 		$this->add_image_sizes();
 		add_filter( 'wp_prepare_attachment_for_js', [ $this, 'wp_prepare_attachment_for_js' ], 10, 2 );
+		add_action( 'wp_ajax_crop-image-web-stories', [ $this, 'wp_ajax_crop_image' ] );
 	}
 
 	/**
@@ -179,7 +180,77 @@ class Image_Sizes extends Service_Base {
 			$response['media_details']['sizes'] = [];
 		}
 
+		if ( current_user_can( 'upload_files' ) ) {
+			$response['nonces']['web_stories_edit'] = wp_create_nonce( 'image_editor_web_story-' . $attachment->ID );
+		}
+
 
 		return $response;
+	}
+
+	/**
+	 * Copy of wp_ajax_crop_image core function.
+	 *
+	 * @see https://github.com/WordPress/wordpress-develop/blob/9ea5645ec29f0e63057a6d6a64dfc7c52cfdb863/src/wp-admin/includes/ajax-actions.php#L3874-L3984
+	 *
+	 * @since 1.13.0
+	 *
+	 * @return void
+	 */
+	public function wp_ajax_crop_image() {
+		$attachment_id = absint( $_POST['id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+
+		check_ajax_referer( 'image_editor_web_story-' . $attachment_id, 'nonce' );
+
+		if ( empty( $attachment_id ) || ! current_user_can( 'upload_files' ) ) {
+			wp_send_json_error();
+		}
+
+		$parent_url = wp_get_attachment_url( $attachment_id );
+		$data       = array_map( 'absint', $_POST['cropDetails'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		$cropped    = wp_crop_image( $attachment_id, $data['x1'], $data['y1'], $data['width'], $data['height'], $data['dst_width'], $data['dst_height'] );
+
+		if ( ! $parent_url || ! $cropped || is_wp_error( $cropped ) ) {
+			wp_send_json_error( [ 'message' => __( 'Image could not be processed.', 'web-stories' ) ] );
+		}
+
+		$context = 'web_stories_editor';
+
+		/* This filter is documented in wp-admin/includes/ajax-actions.php */
+		do_action( 'wp_ajax_crop_image_pre_save', $context, $attachment_id, $cropped );
+
+		/** This filter is documented in wp-admin/includes/class-custom-image-header.php */
+		$cropped = apply_filters( 'wp_create_file_in_uploads', $cropped, $attachment_id ); // For replication.
+
+
+		$url = str_replace( wp_basename( $parent_url ), wp_basename( $cropped ), $parent_url );
+
+		$size       = wp_getimagesize( $cropped );
+		$image_type = ( $size ) ? $size['mime'] : 'image/jpeg';
+
+		$object = [
+			'post_title'     => wp_basename( $cropped ),
+			'post_content'   => $url,
+			'post_mime_type' => $image_type,
+			'guid'           => $url,
+			'context'        => $context,
+		];
+
+		$attachment_id = wp_insert_attachment( $object, $cropped );
+
+		if ( is_wp_error( $attachment_id ) ) {
+			wp_send_json_error( [ 'message' => __( 'Image could not be processed.', 'web-stories' ) ] );
+		}
+
+		$metadata = wp_generate_attachment_metadata( $attachment_id, $cropped );
+
+		/* This filter is documented in wp-admin/includes/ajax-actions.php */
+		$metadata = apply_filters( 'wp_ajax_cropped_attachment_metadata', $metadata );
+		wp_update_attachment_metadata( $attachment_id, $metadata );
+
+		/* This filter is documented in wp-admin/includes/ajax-actions.php */
+		$attachment_id = apply_filters( 'wp_ajax_cropped_attachment_id', $attachment_id, $context );
+
+		wp_send_json_success( wp_prepare_attachment_for_js( $attachment_id ) );
 	}
 }

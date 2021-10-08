@@ -53,10 +53,9 @@ const WordPressImageCropper = window.wp?.media?.controller?.Cropper?.extend?.({
         : control.params.height;
     }
 
-    return wp.ajax.post('crop-image', {
-      nonce: attachment.get('nonces').edit,
+    return wp.ajax.post('crop-image-web-stories', {
+      nonce: attachment.get('nonces').web_stories_edit,
       id: attachment.get('id'),
-      context: control.id,
       cropDetails: cropDetails,
     });
   },
