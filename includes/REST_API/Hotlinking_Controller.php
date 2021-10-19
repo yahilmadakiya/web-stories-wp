@@ -36,6 +36,7 @@ use WP_Http;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
+use Requests_Exception;
 
 /**
  * API endpoint to allow pinging url media assets.
@@ -242,7 +243,6 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 		$url = untrailingslashit( $request['url'] );
 
 		$args          = [
-			'limit_response_size' => 15728640, // 15MB. @todo Remove this, when streaming is implemented.
 			'timeout'             => 10, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 		];
 
@@ -318,7 +318,25 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 	 * @return int
 	 */
 	public function process_headers( $curl, $header ) {
-		header( $header );
+
+		if ( $this->starts_with( $header, 'Content-Length:' ) ) {
+			$file_size = (int) trim( str_replace( 'Content-Length:', '', $header ) );
+			if ( $file_size > 15728640 ) {
+				throw new Requests_Exception( __( 'Invalid File Size', 'web-stories' ), 'rest_invalid_file_size' );
+			}
+			header( $header );
+		}
+
+		if ( $this->starts_with( $header, 'Content-Type:' ) ) {
+			$mime_type          = trim( str_replace( 'Content-Type:', '', $header ) );
+			$allowed_mime_types = $this->get_allowed_mime_types();
+			$allowed_mime_types = array_merge( ...array_values( $allowed_mime_types ) );
+			if ( ! in_array( $mime_type, $allowed_mime_types, true ) ) {
+				throw new Requests_Exception( __( 'Invalid Mime Type', 'web-stories' ), 'rest_invalid_mime_type' );
+			}
+			header( $header );
+		}
+
 
 		return strlen( $header );
 	}
@@ -334,6 +352,21 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 
 		return strlen( $body );
 	}
+
+	/**
+	 * Does string start with.
+	 *
+	 * @since 1.14.0
+	 *
+	 * @param string $string       String to search.
+	 * @param string $start_string String to search with.
+	 *
+	 * @return bool
+	 */
+	private function starts_with( string $string, string $start_string ): bool {
+		return 0 === strpos( $string, $start_string );
+	}
+
 
 	/**
 	 * Retrieves the link's schema, conforming to JSON Schema.
