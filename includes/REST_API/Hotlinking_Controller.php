@@ -60,6 +60,13 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 	private $story_post_type;
 
 	/**
+	 * If streaming to a file, keep the file pointer
+	 *
+	 * @var resource
+	 */
+	protected $stream_handle;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Story_Post_Type $story_post_type Story_Post_Type instance.
@@ -242,10 +249,13 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 		$url = untrailingslashit( $request['url'] );
 
 		$args          = [
-			'limit_response_size' => 15728640, // 15MB. @todo Remove this, when streaming is implemented.
-			'timeout'             => 10, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+			'timeout'             => 60, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 		];
+		$this->stream_handle = fopen('php://temp', 'wb');
+		add_action( 'http_api_curl', [ $this, 'change_curl' ] );
 		$proxy_request = wp_safe_remote_get( $url, $args );
+		remove_action( 'http_api_curl', [ $this, 'change_curl' ] );
+
 		if ( is_wp_error( $proxy_request ) ) {
 			$proxy_request->add_data( [ 'status' => 404 ] );
 			return $proxy_request;
@@ -265,13 +275,18 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 
 		$file_size = (int) $headers['content-length'];
 
-		$body = wp_remote_retrieve_body( $proxy_request );
-
 		header( 'Content-Type: ' . $mime_type );
 		header( 'Content-Length: ' . $file_size );
 
-		echo $body; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		rewind( $this->stream_handle );
+		while ( ! feof( $this->stream_handle ) ) {
+			$buffer = fread( $this->stream_handle, 1024 * 1024 );
+			echo $buffer;
+			ob_flush();
+			flush();
+		}
 
+		fclose( $this->stream_handle );
 		exit;
 	}
 
@@ -412,5 +427,16 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 		}
 
 		return true;
+	}
+
+	public function change_curl( &$handle ) {
+		curl_setopt( $handle, CURLOPT_WRITEFUNCTION, function ( $curl, $body ) {
+			if ( $this->stream_handle ) {
+				fwrite( $this->stream_handle, $body );
+			}
+
+			return strlen( $body );
+		}
+		);
 	}
 }
