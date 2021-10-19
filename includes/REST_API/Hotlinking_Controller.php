@@ -236,7 +236,7 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
-	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+	 * @return void|WP_Error Response object on success, or WP_Error object on failure.
 	 */
 	public function proxy_url( $request ) {
 		$url = untrailingslashit( $request['url'] );
@@ -245,7 +245,11 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 			'limit_response_size' => 15728640, // 15MB. @todo Remove this, when streaming is implemented.
 			'timeout'             => 10, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 		];
+
+		add_action( 'http_api_curl', [ $this, 'handle_curl' ] );
 		$proxy_request = wp_safe_remote_get( $url, $args );
+		remove_action( 'http_api_curl', [ $this, 'handle_curl' ] );
+
 		if ( is_wp_error( $proxy_request ) ) {
 			$proxy_request->add_data( [ 'status' => 404 ] );
 			return $proxy_request;
@@ -254,23 +258,6 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 		if ( WP_Http::OK !== wp_remote_retrieve_response_code( $proxy_request ) ) {
 			return new WP_Error( 'rest_invalid_url', __( 'Invalid URL', 'web-stories' ), [ 'status' => 404 ] );
 		}
-
-		$headers            = wp_remote_retrieve_headers( $proxy_request );
-		$mime_type          = $headers['content-type'];
-		$allowed_mime_types = $this->get_allowed_mime_types();
-		$allowed_mime_types = array_merge( ...array_values( $allowed_mime_types ) );
-		if ( ! in_array( $mime_type, $allowed_mime_types, true ) ) {
-			return new WP_Error( 'rest_invalid_mime_type', __( 'Invalid Mime Type', 'web-stories' ), [ 'status' => 400 ] );
-		}
-
-		$file_size = (int) $headers['content-length'];
-
-		$body = wp_remote_retrieve_body( $proxy_request );
-
-		header( 'Content-Type: ' . $mime_type );
-		header( 'Content-Length: ' . $file_size );
-
-		echo $body; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		exit;
 	}
@@ -314,6 +301,38 @@ class Hotlinking_Controller extends REST_Controller implements HasRequirements {
 		$data    = $this->filter_response_by_context( $data, $context );
 
 		return rest_ensure_response( $data );
+	}
+
+	/**
+	 * @param $handle
+	 */
+	public function handle_curl( &$handle ) {
+		curl_setopt( $handle, CURLOPT_HEADERFUNCTION, [ $this, 'process_headers' ] );
+		curl_setopt( $handle, CURLOPT_WRITEFUNCTION, [ $this, 'process_body' ]);
+	}
+
+	/**
+	 * @param $curl
+	 * @param $header
+	 *
+	 * @return int
+	 */
+	public function process_headers( $curl, $header ) {
+		header( $header );
+
+		return strlen( $header );
+	}
+
+	/**
+	 * @param $curl
+	 * @param $body
+	 *
+	 * @return int
+	 */
+	public function process_body( $curl, $body ) {
+		echo $body;
+
+		return strlen( $body );
 	}
 
 	/**
