@@ -19,7 +19,7 @@
  */
 import { useCallback, useMemo, useRef } from '@web-stories-wp/react';
 import { __ } from '@web-stories-wp/i18n';
-import { useSnackbar, PLACEMENT, Icons } from '@web-stories-wp/design-system';
+import { useSnackbar, PLACEMENT, Icons, noop } from '@web-stories-wp/design-system';
 import { trackEvent } from '@web-stories-wp/tracking';
 import { canTranscodeResource } from '@web-stories-wp/media';
 
@@ -50,6 +50,32 @@ const {
   Captions,
   Scissors,
 } = Icons;
+
+const PictureSwapButton = () => {
+  const { MediaUpload } = useConfig();
+  const dispatchStoryEvent = useStoryTriggersDispatch();
+
+  return (
+    <MediaUpload
+      onSelect={ () => {
+        // @todo Handle onSelect
+      } }
+      render={ ( open ) => (
+        <PictureSwap
+          onClick={ () => {
+            open();
+            dispatchStoryEvent(STORY_EVENTS.onReplaceForegroundMedia);
+
+            trackEvent('quick_action', {
+              name: ACTIONS.REPLACE_MEDIA.trackingEventName,
+              element: selectedElement?.type,
+            });
+          } }
+        />
+      ) }
+    />
+  )
+}
 
 /** @typedef {import('@web-stories-wp/design-system').MenuItemProps} MenuItemProps */
 
@@ -373,17 +399,9 @@ const useQuickActions = () => {
   const foregroundImageActions = useMemo(
     () => [
       {
-        Icon: PictureSwap,
+        Icon: PictureSwapButton,
         label: ACTIONS.REPLACE_MEDIA.text,
-        onClick: (ev) => {
-          dispatchStoryEvent(STORY_EVENTS.onReplaceForegroundMedia);
-          handleFocusMediaPanel()(ev);
-
-          trackEvent('quick_action', {
-            name: ACTIONS.REPLACE_MEDIA.trackingEventName,
-            element: selectedElement?.type,
-          });
-        },
+        onClick: noop,
         ...actionMenuProps,
       },
       ...foregroundCommonActions,
@@ -392,7 +410,6 @@ const useQuickActions = () => {
       actionMenuProps,
       handleFocusMediaPanel,
       foregroundCommonActions,
-      dispatchStoryEvent,
       selectedElement?.type,
     ]
   );
