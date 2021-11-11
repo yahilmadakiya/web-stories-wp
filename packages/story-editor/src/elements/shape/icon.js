@@ -40,8 +40,9 @@ const Container = styled.div`
   padding: 0 0.5px 0.5px;
 `;
 
-// Shape width and height is the set PREVIEW_SIZE (16px) * maskDef.ratio
-// this keeps the available space a square.
+// Shape width is the set PREVIEW_SIZE (16px) * maskDef.ratio.
+// Shape height is always the PREVIEW_SIZE.
+// This doesn't always create a perfect square depending on the ratio but it does keep perspective.
 // Clip paths don't do overflow so any time a path comes right to
 // the edge of the element it will appear cut off.
 // To avoid this, give the ShapePreview a container that controls the width/height
@@ -86,7 +87,7 @@ function ShapeLayerIcon({
     <Container>
       <ShapeContainer
         width={PREVIEW_SIZE * maskDef.ratio}
-        height={PREVIEW_SIZE * maskDef.ratio}
+        height={PREVIEW_SIZE}
       >
         <ShapePreview
           style={{
