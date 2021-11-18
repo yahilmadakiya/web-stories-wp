@@ -90,6 +90,49 @@ export default ({ onChange }) => {
                     ).data;
                     setEyedropperPixelData(pixelData);
                     setEyedropperImg(canvas.toDataURL());
+                    return canvas;
+                  })
+                  .then((canvas) => {
+                    const imageOptions = [
+                      ['image/png', 1],
+                      ['image/webp', 1],
+                      ['image/webp', 0.9],
+                      ['image/webp', 0.7],
+                      ['image/webp', 0.5],
+                      ['image/jpeg', 1],
+                      ['image/jpeg', 0.9],
+                      ['image/jpeg', 0.7],
+                      ['image/jpeg', 0.5],
+                    ];
+
+                    const results = [];
+
+                    return Promise.all(
+                      imageOptions.map(([type, quality]) => {
+                        return new Promise((innerResolve) => {
+                          const imageAsDataURI = canvas.toDataURL(
+                            type,
+                            quality
+                          );
+                          const cb = (imageAsBlob) => {
+                            results.push({
+                              type,
+                              quality,
+                              blob: `${Math.round(imageAsBlob.size / 1000)} kB`,
+                              dataURI: `${Math.round(
+                                imageAsDataURI.length / 1000
+                              )}k characters`,
+                            });
+                            innerResolve();
+                          };
+                          canvas.toBlob(cb, type, quality);
+                        });
+                      })
+                    ).then(() => {
+                      console.table(results);
+                    });
+                  })
+                  .then(() => {
                     resolve();
                   });
               });
