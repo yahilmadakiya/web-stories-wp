@@ -29,6 +29,7 @@ import {
 } from '../../constants';
 
 export const AppFrame = styled.div`
+  height: 100vh;
   width: 100%;
   @media screen and (max-width: ${MIN_DASHBOARD_WIDTH}px) {
     width: ${MIN_DASHBOARD_WIDTH}px;
@@ -38,6 +39,7 @@ export const AppFrame = styled.div`
 export const PageContent = styled.div`
   position: relative;
   padding-top: 10px;
+  height: 100%;
   width: ${({ fullWidth }) =>
     fullWidth ? '100%' : `calc(100% - ${DASHBOARD_LEFT_NAV_WIDTH}px)`};
   left: ${({ fullWidth }) =>

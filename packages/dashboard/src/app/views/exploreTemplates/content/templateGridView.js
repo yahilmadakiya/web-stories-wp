@@ -27,7 +27,9 @@ import {
 } from '@web-stories-wp/react';
 import { __ } from '@web-stories-wp/i18n';
 import { trackEvent } from '@web-stories-wp/tracking';
+import { useVirtual } from 'react-virtual';
 import { useGridViewKeys } from '@web-stories-wp/design-system';
+import styled from 'styled-components';
 
 /**
  * Internal dependencies
@@ -40,9 +42,15 @@ import {
 } from '../../../../types';
 import { useConfig } from '../../../config';
 import { resolveRoute } from '../../../router';
+import { useVirtualizedGridNavigation } from '../../../../../../story-editor/src/components/library/panes/shared/virtualizedPanelGrid';
 import TemplateGridItem, { FOCUS_TEMPLATE_CLASS } from './templateGridItem';
 
-function TemplateGridView({ pageSize, templates, templateActions }) {
+const ScrollableContent = styled.div`
+  height: 700px;
+  overflow-y: scroll;
+`;
+function TemplateGridView({ children, pageSize, templates, templateActions }) {
+  console.log({ pageSize });
   const { isRTL, apiCallbacks } = useConfig();
   const containerRef = useRef();
   const gridRef = useRef();
@@ -65,14 +73,46 @@ function TemplateGridView({ pageSize, templates, templateActions }) {
     [templateActions]
   );
 
-  useGridViewKeys({
-    containerRef,
-    gridRef,
-    itemRefs,
-    isRTL,
-    currentItemId: activeGridItemId,
-    items: templates,
+  const numColumns = Math.floor(
+    containerRef.current?.getBoundingClientRect().width / pageSize.width || 1
+  );
+  const numRows = Math.ceil(templates.length / numColumns);
+  console.log({
+    length: templates.length,
+    calculatedLength: numColumns * numRows,
   });
+  console.log({ numColumns, numRows });
+  // template size: { height, width }
+  // containerRef.width / width
+  const rowVirtualizer = useVirtual({
+    size: numRows,
+    parentRef: containerRef,
+  });
+
+  const columnVirtualizer = useVirtual({
+    horizontal: true,
+    size: numColumns,
+    parentRef: containerRef,
+  });
+
+  console.log(rowVirtualizer);
+
+  // const columnVirtualizer = useVirtual({
+  //   horizontal: true,
+  //   size: 2,
+  //   parentRef: paneRef,
+  //   estimateSize: useCallback(() => TEXT_SET_SIZE + PANEL_GRID_ROW_GAP, []),
+  //   overscan: 0,
+  // });
+
+  // useGridViewKeys({
+  //   containerRef,
+  //   gridRef,
+  //   itemRefs,
+  //   isRTL,
+  //   currentItemId: activeGridItemId,
+  //   items: templates,
+  // });
 
   // when keyboard focus changes and updated activeGridItemId
   // immediately focus the first interactive element in the grid item
@@ -87,58 +127,65 @@ function TemplateGridView({ pageSize, templates, templateActions }) {
 
   useFocusOut(containerRef, () => setActiveGridItemId(null), []);
 
-  const memoizedTemplateItems = useMemo(
-    () =>
-      templates.map(
-        ({ id, centerTargetAction, slug, status, title, postersByPage }) => {
-          const isActive = activeGridItemId === id;
-          const posterSrc = postersByPage?.[0];
-          const canCreateStory = Boolean(apiCallbacks?.createStoryFromTemplate);
-          return (
-            <TemplateGridItem
-              detailLink={resolveRoute(centerTargetAction)}
-              onCreateStory={
-                canCreateStory ? () => handleUseStory({ id, title }) : null
-              }
-              onFocus={() => {
-                setActiveGridItemId(id);
-              }}
-              onSeeDetailsClick={scrollToTop}
-              height={pageSize.height}
-              id={id}
-              isActive={isActive}
-              key={slug}
-              posterSrc={posterSrc}
-              ref={(el) => {
-                itemRefs.current[id] = el;
-              }}
-              slug={slug}
-              status={status}
-              title={title}
-            />
-          );
-        }
-      ),
-    [
-      templates,
-      activeGridItemId,
-      pageSize.height,
-      handleUseStory,
-      scrollToTop,
-      apiCallbacks,
-    ]
-  );
   return (
-    <div ref={containerRef}>
+    <ScrollableContent ref={containerRef}>
       <CardGrid
         pageSize={pageSize}
         role="list"
         ref={gridRef}
         ariaLabel={__('Viewing available templates', 'web-stories')}
       >
-        {memoizedTemplateItems}
+        {rowVirtualizer.virtualItems.map((virtualRow) =>
+          columnVirtualizer.virtualItems.map((virtualColumn) => {
+            const gridIndex =
+              numColumns * virtualRow.index + virtualColumn.index;
+
+            if (gridIndex > templates.length - 1) {
+              return null;
+            }
+
+            const {
+              id,
+              centerTargetAction,
+              slug,
+              status,
+              title,
+              postersByPage,
+            } = templates[gridIndex];
+            const isActive = activeGridItemId === id;
+            const posterSrc = postersByPage?.[0];
+            const canCreateStory = Boolean(
+              apiCallbacks?.createStoryFromTemplate
+            );
+
+            return (
+              <TemplateGridItem
+                detailLink={resolveRoute(centerTargetAction)}
+                onCreateStory={() =>
+                  canCreateStory ? handleUseStory({ id, title }) : null
+                }
+                onFocus={() => {
+                  setActiveGridItemId(id);
+                }}
+                onSeeDetailsClick={scrollToTop}
+                height={pageSize.height}
+                id={id}
+                isActive={isActive}
+                key={slug}
+                posterSrc={posterSrc}
+                ref={(el) => {
+                  itemRefs.current[id] = el;
+                }}
+                slug={slug}
+                status={status}
+                title={title}
+              />
+            );
+          })
+        )}
       </CardGrid>
-    </div>
+      {children}
+    </ScrollableContent>
   );
 }
 

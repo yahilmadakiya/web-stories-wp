@@ -69,12 +69,11 @@ function Content({
       );
     }
     return totalTemplates > 0 ? (
-      <>
-        <TemplateGridView
-          templates={templates}
-          pageSize={view.pageSize}
-          templateActions={templateActions}
-        />
+      <TemplateGridView
+        templates={templates}
+        pageSize={view.pageSize}
+        templateActions={templateActions}
+      >
         <InfiniteScroller
           canLoadMore={!allPagesFetched}
           isLoading={isLoading}
@@ -86,7 +85,7 @@ function Content({
           loadingAriaMessage={__('Loading more templates', 'web-stories')}
           onLoadMore={page.requestNextPage}
         />
-      </>
+      </TemplateGridView>
     ) : (
       <EmptyContentMessage>
         <Headline size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL} as="h3">

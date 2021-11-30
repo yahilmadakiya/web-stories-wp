@@ -18,6 +18,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import { __, sprintf } from '@web-stories-wp/i18n';
 import {
   Button,
@@ -48,6 +49,10 @@ import {
 import { EmptyContentMessage } from '../../shared';
 import StoriesView from './storiesView';
 
+const FullStandardViewContentGutter = styled(StandardViewContentGutter)`
+  height: 100%;
+`;
+
 function Content({
   allPagesFetched,
   filter,
@@ -62,7 +67,7 @@ function Content({
 }) {
   return (
     <Layout.Scrollable>
-      <StandardViewContentGutter>
+      <FullStandardViewContentGutter>
         {stories.length > 0 ? (
           <>
             <StoriesView
@@ -113,7 +118,7 @@ function Content({
             )}
           </EmptyContentMessage>
         )}
-      </StandardViewContentGutter>
+      </FullStandardViewContentGutter>
     </Layout.Scrollable>
   );
 }

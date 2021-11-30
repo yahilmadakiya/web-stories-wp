@@ -16,10 +16,6 @@
 /**
  * External dependencies
  */
-import { __ } from '@web-stories-wp/i18n';
-/**
- * External dependencies
- */
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {
@@ -31,6 +27,8 @@ import {
   useFocusOut,
 } from '@web-stories-wp/react';
 import { useGridViewKeys } from '@web-stories-wp/design-system';
+import { __ } from '@web-stories-wp/i18n';
+import { useVirtual } from 'react-virtual';
 /**
  * Internal dependencies
  */
@@ -67,13 +65,42 @@ const StoryGridView = ({
   const activeGridItemIdRef = useRef();
   const gridItemIds = useMemo(() => stories.map(({ id }) => id), [stories]);
 
-  useGridViewKeys({
-    containerRef,
-    gridRef,
-    itemRefs,
-    isRTL,
-    currentItemId: activeGridItemId,
-    items: stories,
+  // useGridViewKeys({
+  //   containerRef,
+  //   gridRef,
+  //   itemRefs,
+  //   isRTL,
+  //   currentItemId: activeGridItemId,
+  //   items: stories,
+  // });
+
+  console.log({
+    pageHeight: containerRef.current?.getBoundingClientRect().height,
+    storyHeight: pageSize.height,
+  });
+  const numColumns = Math.floor(
+    containerRef.current?.getBoundingClientRect().width / pageSize.width || 1
+  );
+  const numRows = Math.ceil(
+    containerRef.current?.getBoundingClientRect().height / pageSize.height
+  );
+  console.log({ numRows, numColumns });
+  const rowVirtualizer = useVirtual({
+    size: numRows,
+    parentRef: containerRef,
+  });
+
+  const columnVirtualizer = useVirtual({
+    horizontal: true,
+    size: numColumns,
+    parentRef: containerRef,
+  });
+
+  console.log({
+    initialLength: stories.length,
+    newLength: numColumns * numRows,
+    rowVirtualizer,
+    columnVirtualizer,
   });
 
   // We only want to force focus when returning to the grid from a dialog
@@ -162,36 +189,62 @@ const StoryGridView = ({
     };
   }, [handleMenuToggle, manuallySetFocusOut, storyMenu]);
 
-  const memoizedStoryGrid = useMemo(
-    () =>
-      stories.map((story) => {
-        return (
-          <StoryGridItem
-            onFocus={() => setActiveGridItemId(story.id)}
-            isActive={activeGridItemId === story.id}
-            ref={(el) => {
-              itemRefs.current[story.id] = el;
-            }}
-            key={story.id}
-            pageSize={pageSize}
-            renameStory={renameStory}
-            story={story}
-            storyMenu={modifiedStoryMenu}
-          />
-        );
-      }),
-    [activeGridItemId, modifiedStoryMenu, pageSize, renameStory, stories]
-  );
+  // const memoizedStoryGrid = useMemo(
+  //   () =>
+  //     stories.map((story) => {
+  //       return (
+  //         <StoryGridItem
+  //           onFocus={() => setActiveGridItemId(story.id)}
+  //           isActive={activeGridItemId === story.id}
+  //           ref={(el) => {
+  //             itemRefs.current[story.id] = el;
+  //           }}
+  //           key={story.id}
+  //           pageSize={pageSize}
+  //           renameStory={renameStory}
+  //           story={story}
+  //           storyMenu={modifiedStoryMenu}
+  //         />
+  //       );
+  //     }),
+  //   [activeGridItemId, modifiedStoryMenu, pageSize, renameStory, stories]
+  // );
 
   return (
-    <div ref={containerRef}>
+    <div style={{ height: '100%' }} ref={containerRef}>
       <StoryGrid
         pageSize={pageSize}
         ref={gridRef}
         role="list"
         ariaLabel={__('Viewing stories', 'web-stories')}
       >
-        {memoizedStoryGrid}
+        {rowVirtualizer.virtualItems.map((virtualRow) =>
+          columnVirtualizer.virtualItems.map((virtualColumn) => {
+            const gridIndex =
+              numColumns * virtualRow.index + virtualColumn.index;
+
+            if (gridIndex > stories.length - 1) {
+              return null;
+            }
+
+            const story = stories[gridIndex];
+
+            return (
+              <StoryGridItem
+                onFocus={() => setActiveGridItemId(story.id)}
+                isActive={activeGridItemId === story.id}
+                ref={(el) => {
+                  itemRefs.current[story.id] = el;
+                }}
+                key={story.id}
+                pageSize={pageSize}
+                renameStory={renameStory}
+                story={story}
+                storyMenu={modifiedStoryMenu}
+              />
+            );
+          })
+        )}
       </StoryGrid>
     </div>
   );
