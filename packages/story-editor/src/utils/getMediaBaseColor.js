@@ -17,8 +17,8 @@
 /**
  * External dependencies
  */
-import { trackError } from '@web-stories-wp/tracking';
-import { getHexFromSolidArray } from '@web-stories-wp/patterns';
+import { trackError } from '@googleforcreators/tracking';
+import { getHexFromSolidArray } from '@googleforcreators/patterns';
 
 const STYLES = {
   boxSizing: 'border-box',
