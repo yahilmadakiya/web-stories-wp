@@ -63,6 +63,7 @@ const toggleSortLookup = {
 };
 
 export default function StoryListView({
+  children,
   handleSortChange,
   handleSortDirectionChange,
   hideStoryList,
@@ -122,147 +123,150 @@ export default function StoryListView({
   ]);
 
   return (
-    <ListView data-testid="story-list-view">
-      <Table aria-label={__('List view of created stories', 'web-stories')}>
-        <StickyTableHeader>
-          <TableRow>
-            <TablePreviewHeaderCell
-              onClick={() => onSortTitleSelected(STORY_SORT_OPTIONS.NAME)}
-              onKeyDown={(e) => onKeyDownSort(e, STORY_SORT_OPTIONS.NAME)}
-            >
-              <SelectableTitle
-                aria-label={__(
-                  'Title, select to sort table by story title',
-                  'web-stories'
-                )}
-                forwardedAs="span"
-                size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
-                isBold
+    <>
+      <ListView data-testid="story-list-view">
+        <Table aria-label={__('List view of created stories', 'web-stories')}>
+          <StickyTableHeader>
+            <TableRow>
+              <TablePreviewHeaderCell
+                onClick={() => onSortTitleSelected(STORY_SORT_OPTIONS.NAME)}
+                onKeyDown={(e) => onKeyDownSort(e, STORY_SORT_OPTIONS.NAME)}
               >
-                {__('Title', 'web-stories')}
-              </SelectableTitle>
-            </TablePreviewHeaderCell>
-            <TableTitleHeaderCell
-              onClick={() => onSortTitleSelected(STORY_SORT_OPTIONS.NAME)}
-              onKeyDown={(e) => onKeyDownSort(e, STORY_SORT_OPTIONS.NAME)}
-            >
-              <SelectableTitle
-                aria-hidden
-                active={storySort === STORY_SORT_OPTIONS.NAME}
-                forwardedAs="span"
-                size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
-                isBold
-              >
-                {__('Title', 'web-stories')}
-              </SelectableTitle>
-              <ArrowIcon
-                active={storySort === STORY_SORT_OPTIONS.NAME}
-                asc={sortDirection === SORT_DIRECTION.ASC}
-              >
-                {<Icons.ArrowDown />}
-              </ArrowIcon>
-            </TableTitleHeaderCell>
-            <TableAuthorHeaderCell>
-              <SelectableTitle
-                aria-label={__(
-                  'Author, select to sort table by story author',
-                  'web-stories'
-                )}
-                onClick={() =>
-                  onSortTitleSelected(STORY_SORT_OPTIONS.CREATED_BY)
-                }
-                onKeyDown={(e) =>
-                  onKeyDownSort(e, STORY_SORT_OPTIONS.CREATED_BY)
-                }
-                active={storySort === STORY_SORT_OPTIONS.CREATED_BY}
-                forwardedAs="span"
-                size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
-                isBold
-              >
-                {__('Author', 'web-stories')}
-              </SelectableTitle>
-              <ArrowIconWithTitle
-                aria-hidden
-                active={storySort === STORY_SORT_OPTIONS.CREATED_BY}
-                asc={sortDirection === SORT_DIRECTION.ASC}
-              >
-                {storySort === STORY_SORT_OPTIONS.CREATED_BY ? (
-                  <Icons.ArrowDown />
-                ) : (
-                  <EmptyIconSpace />
-                )}
-              </ArrowIconWithTitle>
-            </TableAuthorHeaderCell>
-            <TableDateHeaderCell>
-              <SelectableTitle
-                aria-label={__(
-                  'Creation date, select to sort table by date story was created',
-                  'web-stories'
-                )}
-                onClick={() =>
-                  onSortTitleSelected(STORY_SORT_OPTIONS.DATE_CREATED)
-                }
-                onKeyDown={(e) =>
-                  onKeyDownSort(e, STORY_SORT_OPTIONS.DATE_CREATED)
-                }
-                active={storySort === STORY_SORT_OPTIONS.DATE_CREATED}
-                forwardedAs="span"
-                size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
-                isBold
-              >
-                {__('Date Created', 'web-stories')}
-              </SelectableTitle>
-              <ArrowIconWithTitle
-                aria-hidden
-                active={storySort === STORY_SORT_OPTIONS.DATE_CREATED}
-                asc={sortDirection === SORT_DIRECTION.ASC}
-              >
-                <Icons.ArrowDown />
-              </ArrowIconWithTitle>
-            </TableDateHeaderCell>
-            <TableDateHeaderCell>
-              <SelectableTitle
-                aria-label={__(
-                  'Modification date, select to sort table by date story was last modified',
-                  'web-stories'
-                )}
-                onClick={() =>
-                  onSortTitleSelected(STORY_SORT_OPTIONS.LAST_MODIFIED)
-                }
-                onKeyDown={(e) =>
-                  onKeyDownSort(e, STORY_SORT_OPTIONS.LAST_MODIFIED)
-                }
-                active={storySort === STORY_SORT_OPTIONS.LAST_MODIFIED}
-                forwardedAs="span"
-                size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
-                isBold
-              >
-                {__('Last Modified', 'web-stories')}
-              </SelectableTitle>
-              <ArrowIconWithTitle
-                aria-hidden
-                active={storySort === STORY_SORT_OPTIONS.LAST_MODIFIED}
-                asc={sortDirection === SORT_DIRECTION.ASC}
-              >
-                <Icons.ArrowDown />
-              </ArrowIconWithTitle>
-            </TableDateHeaderCell>
-            {storyStatus !== STORY_STATUS.DRAFT && (
-              <TableStatusHeaderCell>
-                <Text
-                  as="span"
-                  isBold
+                <SelectableTitle
+                  aria-label={__(
+                    'Title, select to sort table by story title',
+                    'web-stories'
+                  )}
+                  forwardedAs="span"
                   size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
+                  isBold
                 >
-                  {__('Publish State', 'web-stories')}
-                </Text>
-              </TableStatusHeaderCell>
-            )}
-          </TableRow>
-        </StickyTableHeader>
-        <TableBody>{tableContents}</TableBody>
-      </Table>
-    </ListView>
+                  {__('Title', 'web-stories')}
+                </SelectableTitle>
+              </TablePreviewHeaderCell>
+              <TableTitleHeaderCell
+                onClick={() => onSortTitleSelected(STORY_SORT_OPTIONS.NAME)}
+                onKeyDown={(e) => onKeyDownSort(e, STORY_SORT_OPTIONS.NAME)}
+              >
+                <SelectableTitle
+                  aria-hidden
+                  active={storySort === STORY_SORT_OPTIONS.NAME}
+                  forwardedAs="span"
+                  size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
+                  isBold
+                >
+                  {__('Title', 'web-stories')}
+                </SelectableTitle>
+                <ArrowIcon
+                  active={storySort === STORY_SORT_OPTIONS.NAME}
+                  asc={sortDirection === SORT_DIRECTION.ASC}
+                >
+                  {<Icons.ArrowDown />}
+                </ArrowIcon>
+              </TableTitleHeaderCell>
+              <TableAuthorHeaderCell>
+                <SelectableTitle
+                  aria-label={__(
+                    'Author, select to sort table by story author',
+                    'web-stories'
+                  )}
+                  onClick={() =>
+                    onSortTitleSelected(STORY_SORT_OPTIONS.CREATED_BY)
+                  }
+                  onKeyDown={(e) =>
+                    onKeyDownSort(e, STORY_SORT_OPTIONS.CREATED_BY)
+                  }
+                  active={storySort === STORY_SORT_OPTIONS.CREATED_BY}
+                  forwardedAs="span"
+                  size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
+                  isBold
+                >
+                  {__('Author', 'web-stories')}
+                </SelectableTitle>
+                <ArrowIconWithTitle
+                  aria-hidden
+                  active={storySort === STORY_SORT_OPTIONS.CREATED_BY}
+                  asc={sortDirection === SORT_DIRECTION.ASC}
+                >
+                  {storySort === STORY_SORT_OPTIONS.CREATED_BY ? (
+                    <Icons.ArrowDown />
+                  ) : (
+                    <EmptyIconSpace />
+                  )}
+                </ArrowIconWithTitle>
+              </TableAuthorHeaderCell>
+              <TableDateHeaderCell>
+                <SelectableTitle
+                  aria-label={__(
+                    'Creation date, select to sort table by date story was created',
+                    'web-stories'
+                  )}
+                  onClick={() =>
+                    onSortTitleSelected(STORY_SORT_OPTIONS.DATE_CREATED)
+                  }
+                  onKeyDown={(e) =>
+                    onKeyDownSort(e, STORY_SORT_OPTIONS.DATE_CREATED)
+                  }
+                  active={storySort === STORY_SORT_OPTIONS.DATE_CREATED}
+                  forwardedAs="span"
+                  size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
+                  isBold
+                >
+                  {__('Date Created', 'web-stories')}
+                </SelectableTitle>
+                <ArrowIconWithTitle
+                  aria-hidden
+                  active={storySort === STORY_SORT_OPTIONS.DATE_CREATED}
+                  asc={sortDirection === SORT_DIRECTION.ASC}
+                >
+                  <Icons.ArrowDown />
+                </ArrowIconWithTitle>
+              </TableDateHeaderCell>
+              <TableDateHeaderCell>
+                <SelectableTitle
+                  aria-label={__(
+                    'Modification date, select to sort table by date story was last modified',
+                    'web-stories'
+                  )}
+                  onClick={() =>
+                    onSortTitleSelected(STORY_SORT_OPTIONS.LAST_MODIFIED)
+                  }
+                  onKeyDown={(e) =>
+                    onKeyDownSort(e, STORY_SORT_OPTIONS.LAST_MODIFIED)
+                  }
+                  active={storySort === STORY_SORT_OPTIONS.LAST_MODIFIED}
+                  forwardedAs="span"
+                  size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
+                  isBold
+                >
+                  {__('Last Modified', 'web-stories')}
+                </SelectableTitle>
+                <ArrowIconWithTitle
+                  aria-hidden
+                  active={storySort === STORY_SORT_OPTIONS.LAST_MODIFIED}
+                  asc={sortDirection === SORT_DIRECTION.ASC}
+                >
+                  <Icons.ArrowDown />
+                </ArrowIconWithTitle>
+              </TableDateHeaderCell>
+              {storyStatus !== STORY_STATUS.DRAFT && (
+                <TableStatusHeaderCell>
+                  <Text
+                    as="span"
+                    isBold
+                    size={THEME_CONSTANTS.TYPOGRAPHY.PRESET_SIZES.SMALL}
+                  >
+                    {__('Publish State', 'web-stories')}
+                  </Text>
+                </TableStatusHeaderCell>
+              )}
+            </TableRow>
+          </StickyTableHeader>
+          <TableBody>{tableContents}</TableBody>
+        </Table>
+      </ListView>
+      {children}
+    </>
   );
 }
 

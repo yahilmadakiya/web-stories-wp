@@ -51,11 +51,12 @@ DashboardGrid.propTypes = {
 };
 
 const CardGrid = forwardRef(function CardGrid(
-  { ariaLabel, children, pageSize },
+  { ariaLabel, children, pageSize, ...props },
   ref
 ) {
   return (
     <DashboardGrid
+      {...props}
       ref={ref}
       role="list"
       data-testid="dashboard-grid-list"

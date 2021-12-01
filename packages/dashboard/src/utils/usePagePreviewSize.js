@@ -78,6 +78,7 @@ const sizeFromWidth = (
     availableContainerSpace -= DASHBOARD_LEFT_NAV_WIDTH;
   }
 
+  // Can get number of columns here!
   const itemsInRow = Math.floor(availableContainerSpace / width);
   const columnGapWidth = GRID_SPACING.COLUMN_GAP * (itemsInRow - 1);
   const pageGutter = PAGE_WRAPPER.GUTTER * 2;

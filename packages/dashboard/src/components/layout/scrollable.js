@@ -26,6 +26,7 @@ import useLayoutContext from './useLayoutContext';
 
 const ScrollContent = styled.div`
   height: 100%;
+  overflow: scroll;
 `;
 
 const Scrollable = ({ children }) => {

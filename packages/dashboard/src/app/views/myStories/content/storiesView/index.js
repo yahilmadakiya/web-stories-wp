@@ -54,6 +54,7 @@ import StoryGridView from '../storyGridView';
 
 const ACTIVE_DIALOG_DELETE_STORY = 'DELETE_STORY';
 function StoriesView({
+  children,
   filterValue,
   loading,
   sort,
@@ -219,7 +220,9 @@ function StoriesView({
           storyMenu={storyMenu}
           storySort={sort.value}
           storyStatus={filterValue}
-        />
+        >
+          {children}
+        </ListView>
       );
     }
 
@@ -238,13 +241,16 @@ function StoriesView({
             value: returnStoryFocusId,
             set: setReturnStoryFocusId,
           }}
-        />
+        >
+          {children}
+        </StoryGridView>
       );
     }
 
     // Hide all stories when filter is triggered.
     return null;
   }, [
+    children,
     loading,
     filterValue,
     renameStory,

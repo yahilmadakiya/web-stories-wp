@@ -37,9 +37,11 @@ export const AppFrame = styled.div`
 `;
 
 export const PageContent = styled.div`
+  display: flex;
+  flex-direction: column;
   position: relative;
-  padding-top: 10px;
   height: 100%;
+  padding-top: 10px;
   width: ${({ fullWidth }) =>
     fullWidth ? '100%' : `calc(100% - ${DASHBOARD_LEFT_NAV_WIDTH}px)`};
   left: ${({ fullWidth }) =>

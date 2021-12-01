@@ -19,6 +19,7 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {
+  Fragment,
   useRef,
   useEffect,
   useState,
@@ -29,10 +30,11 @@ import {
 import { useGridViewKeys } from '@web-stories-wp/design-system';
 import { __ } from '@web-stories-wp/i18n';
 import { useVirtual } from 'react-virtual';
+
 /**
  * Internal dependencies
  */
-import { CardGrid } from '../../../../../components';
+import { CardGrid, StandardViewContentGutter } from '../../../../../components';
 import {
   StoriesPropType,
   StoryMenuPropType,
@@ -46,11 +48,25 @@ import {
 import { useConfig } from '../../../../config';
 import StoryGridItem from '../storyGridItem';
 
+const COLUMNS = new Array(3).fill(0);
+
+const ScrollableGutter = styled(StandardViewContentGutter)`
+  flex: 1 1 auto;
+  overflow: scroll;
+`;
+
+const VirtualizedWrapper = styled.div`
+  height: ${({ height }) => height}px;
+  width: 100%;
+  position: relative;
+`;
+
 const StoryGrid = styled(CardGrid)`
-  width: calc(100% - ${PAGE_WRAPPER.GUTTER}px);
+  /* height: ${({ $height }) => $height}px; */
 `;
 
 const StoryGridView = ({
+  children,
   stories,
   pageSize,
   storyMenu,
@@ -74,34 +90,29 @@ const StoryGridView = ({
   //   items: stories,
   // });
 
-  console.log({
-    pageHeight: containerRef.current?.getBoundingClientRect().height,
-    storyHeight: pageSize.height,
-  });
-  const numColumns = Math.floor(
-    containerRef.current?.getBoundingClientRect().width / pageSize.width || 1
-  );
-  const numRows = Math.ceil(
-    containerRef.current?.getBoundingClientRect().height / pageSize.height
-  );
-  console.log({ numRows, numColumns });
+  // console.log({
+  //   pageHeight: containerRef.current?.getBoundingClientRect().height,
+  //   storyHeight: pageSize.height,
+  // });
+  // const numColumns = Math.floor(
+  //   containerRef.current?.getBoundingClientRect().width / pageSize.width || 1
+  // );
+  const numColumns = 3;
+  // const numRows = Math.ceil(
+  //   containerRef.current?.getBoundingClientRect().height / pageSize.height || 0
+  // );
+  const numRows = stories.length / numColumns;
   const rowVirtualizer = useVirtual({
-    size: numRows,
+    size: 100000, // should add 1 if there's more to fetch
+    // row height
+    estimateSize: useCallback(() => {
+      return 100;
+    }, []),
     parentRef: containerRef,
+    // overscan: 3,
   });
 
-  const columnVirtualizer = useVirtual({
-    horizontal: true,
-    size: numColumns,
-    parentRef: containerRef,
-  });
-
-  console.log({
-    initialLength: stories.length,
-    newLength: numColumns * numRows,
-    rowVirtualizer,
-    columnVirtualizer,
-  });
+  console.log(rowVirtualizer);
 
   // We only want to force focus when returning to the grid from a dialog
   // By checking to see if the active grid item no longer exists
@@ -211,46 +222,67 @@ const StoryGridView = ({
   // );
 
   return (
-    <div style={{ height: '100%' }} ref={containerRef}>
-      <StoryGrid
-        pageSize={pageSize}
-        ref={gridRef}
-        role="list"
-        ariaLabel={__('Viewing stories', 'web-stories')}
-      >
-        {rowVirtualizer.virtualItems.map((virtualRow) =>
-          columnVirtualizer.virtualItems.map((virtualColumn) => {
-            const gridIndex =
-              numColumns * virtualRow.index + virtualColumn.index;
+    <ScrollableGutter ref={containerRef}>
+      <VirtualizedWrapper height={rowVirtualizer.totalSize}>
+        {/* <StoryGrid
+          // $height={rowVirtualizer.totalSize}
+          pageSize={pageSize}
+          ref={gridRef}
+          role="list"
+          ariaLabel={__('Viewing stories', 'web-stories')}
+        > */}
+        {rowVirtualizer.virtualItems.map((virtualRow) => (
+          <div
+            key={virtualRow.index}
+            style={{
+              backgroundColor: virtualRow.index % 2 ? 'salmon' : 'skyblue',
+              top: 0,
+              left: 0,
+              position: 'absolute',
+              width: '100%',
+              height: `${virtualRow.size}px`,
+              transform: `translateY(${virtualRow.start}px)`,
+            }}
+          >
+            {virtualRow.index}
+          </div>
+          // <Fragment key={virtualRow.index}>
+          //   {COLUMNS.map((_, columnIndex) => {
+          //     // console.log(virtualRow);
+          //     const gridIndex = numColumns * virtualRow.index + columnIndex;
 
-            if (gridIndex > stories.length - 1) {
-              return null;
-            }
+          //     if (gridIndex > stories.length - 1) {
+          //       return null;
+          //     }
 
-            const story = stories[gridIndex];
+          //     const story = stories[gridIndex];
 
-            return (
-              <StoryGridItem
-                onFocus={() => setActiveGridItemId(story.id)}
-                isActive={activeGridItemId === story.id}
-                ref={(el) => {
-                  itemRefs.current[story.id] = el;
-                }}
-                key={story.id}
-                pageSize={pageSize}
-                renameStory={renameStory}
-                story={story}
-                storyMenu={modifiedStoryMenu}
-              />
-            );
-          })
-        )}
-      </StoryGrid>
-    </div>
+          //     return (
+          //       <StoryGridItem
+          //         onFocus={() => setActiveGridItemId(story.id)}
+          //         isActive={activeGridItemId === story.id}
+          //         ref={(el) => {
+          //           itemRefs.current[story.id] = el;
+          //         }}
+          //         key={columnIndex}
+          //         pageSize={pageSize}
+          //         renameStory={renameStory}
+          //         story={story}
+          //         storyMenu={modifiedStoryMenu}
+          //       />
+          //     );
+          //   })}
+          // </Fragment>
+        ))}
+        {/* </StoryGrid> */}
+      </VirtualizedWrapper>
+      {/* {children} */}
+    </ScrollableGutter>
   );
 };
 
 StoryGridView.propTypes = {
+  children: PropTypes.node,
   stories: StoriesPropType,
   pageSize: PageSizePropType.isRequired,
   storyMenu: StoryMenuPropType,
