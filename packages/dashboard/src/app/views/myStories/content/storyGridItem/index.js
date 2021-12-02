@@ -51,7 +51,10 @@ import { CardWrapper, CustomCardGridItem, ScrimAnchor } from './components';
 import StoryDisplayContent from './storyDisplayContent';
 
 const StoryGridItem = forwardRef(
-  ({ onFocus, isActive, pageSize, renameStory, story, storyMenu }, ref) => {
+  (
+    { onFocus, isActive, pageSize, renameStory, story, storyMenu, ...props },
+    ref
+  ) => {
     const { enablePostLocking } = useFeatures();
     const { userId } = useConfig();
     const tabIndex = isActive ? 0 : -1;
@@ -132,6 +135,7 @@ const StoryGridItem = forwardRef(
 
     return (
       <CustomCardGridItem
+        {...props}
         data-testid={`story-grid-item-${story.id}`}
         onFocus={onFocus}
         $posterHeight={pageSize.height}

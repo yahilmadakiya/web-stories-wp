@@ -17,7 +17,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import {
   Fragment,
   useRef,
@@ -42,7 +42,7 @@ import {
   RenameStoryPropType,
 } from '../../../../../types';
 import {
-  PAGE_WRAPPER,
+  GRID_SPACING,
   STORY_CONTEXT_MENU_ACTIONS,
 } from '../../../../../constants';
 import { useConfig } from '../../../../config';
@@ -61,9 +61,16 @@ const VirtualizedWrapper = styled.div`
   position: relative;
 `;
 
-const StoryGrid = styled(CardGrid)`
-  /* height: ${({ $height }) => $height}px; */
-`;
+const VirtualizedStoryGridItem = styled(StoryGridItem)(
+  ({ $height, $width, $translateX, $translateY }) => css`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: ${$width}px;
+    height: ${$height}px;
+    transform: translateX(${$translateX}px) translateY(${$translateY}px);
+  `
+);
 
 const StoryGridView = ({
   children,
@@ -90,29 +97,19 @@ const StoryGridView = ({
   //   items: stories,
   // });
 
-  // console.log({
-  //   pageHeight: containerRef.current?.getBoundingClientRect().height,
-  //   storyHeight: pageSize.height,
-  // });
-  // const numColumns = Math.floor(
-  //   containerRef.current?.getBoundingClientRect().width / pageSize.width || 1
-  // );
-  const numColumns = 3;
-  // const numRows = Math.ceil(
-  //   containerRef.current?.getBoundingClientRect().height / pageSize.height || 0
-  // );
-  const numRows = stories.length / numColumns;
+  const numColumns = Math.floor(
+    containerRef.current?.getBoundingClientRect().width / pageSize.width || 1
+  );
+  const numRows = Math.ceil(stories.length / numColumns);
   const rowVirtualizer = useVirtual({
-    size: 100000, // should add 1 if there's more to fetch
-    // row height
+    size: numRows,
+    // virtualized row height
     estimateSize: useCallback(() => {
-      return 100;
-    }, []),
+      return pageSize.height + GRID_SPACING.ROW_GAP;
+    }, [pageSize.height]),
     parentRef: containerRef,
-    // overscan: 3,
+    overscan: 2,
   });
-
-  console.log(rowVirtualizer);
 
   // We only want to force focus when returning to the grid from a dialog
   // By checking to see if the active grid item no longer exists
@@ -200,83 +197,54 @@ const StoryGridView = ({
     };
   }, [handleMenuToggle, manuallySetFocusOut, storyMenu]);
 
-  // const memoizedStoryGrid = useMemo(
-  //   () =>
-  //     stories.map((story) => {
-  //       return (
-  //         <StoryGridItem
-  //           onFocus={() => setActiveGridItemId(story.id)}
-  //           isActive={activeGridItemId === story.id}
-  //           ref={(el) => {
-  //             itemRefs.current[story.id] = el;
-  //           }}
-  //           key={story.id}
-  //           pageSize={pageSize}
-  //           renameStory={renameStory}
-  //           story={story}
-  //           storyMenu={modifiedStoryMenu}
-  //         />
-  //       );
-  //     }),
-  //   [activeGridItemId, modifiedStoryMenu, pageSize, renameStory, stories]
-  // );
-
   return (
     <ScrollableGutter ref={containerRef}>
       <VirtualizedWrapper height={rowVirtualizer.totalSize}>
-        {/* <StoryGrid
-          // $height={rowVirtualizer.totalSize}
-          pageSize={pageSize}
+        <CardGrid
           ref={gridRef}
           role="list"
           ariaLabel={__('Viewing stories', 'web-stories')}
-        > */}
-        {rowVirtualizer.virtualItems.map((virtualRow) => (
-          <div
-            key={virtualRow.index}
-            style={{
-              backgroundColor: virtualRow.index % 2 ? 'salmon' : 'skyblue',
-              top: 0,
-              left: 0,
-              position: 'absolute',
-              width: '100%',
-              height: `${virtualRow.size}px`,
-              transform: `translateY(${virtualRow.start}px)`,
-            }}
-          >
-            {virtualRow.index}
-          </div>
-          // <Fragment key={virtualRow.index}>
-          //   {COLUMNS.map((_, columnIndex) => {
-          //     // console.log(virtualRow);
-          //     const gridIndex = numColumns * virtualRow.index + columnIndex;
+        >
+          {rowVirtualizer.virtualItems.map((virtualRow) => (
+            <Fragment key={virtualRow.index}>
+              {COLUMNS.map((_, columnIndex) => {
+                const gridIndex = numColumns * virtualRow.index + columnIndex;
 
-          //     if (gridIndex > stories.length - 1) {
-          //       return null;
-          //     }
+                if (gridIndex > stories.length - 1) {
+                  return null;
+                }
 
-          //     const story = stories[gridIndex];
+                const story = stories[gridIndex];
 
-          //     return (
-          //       <StoryGridItem
-          //         onFocus={() => setActiveGridItemId(story.id)}
-          //         isActive={activeGridItemId === story.id}
-          //         ref={(el) => {
-          //           itemRefs.current[story.id] = el;
-          //         }}
-          //         key={columnIndex}
-          //         pageSize={pageSize}
-          //         renameStory={renameStory}
-          //         story={story}
-          //         storyMenu={modifiedStoryMenu}
-          //       />
-          //     );
-          //   })}
-          // </Fragment>
-        ))}
-        {/* </StoryGrid> */}
+                return (
+                  <VirtualizedStoryGridItem
+                    // Disable reason:
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={columnIndex}
+                    onFocus={() => setActiveGridItemId(story.id)}
+                    isActive={activeGridItemId === story.id}
+                    ref={(el) => {
+                      itemRefs.current[story.id] = el;
+                    }}
+                    pageSize={pageSize}
+                    renameStory={renameStory}
+                    story={story}
+                    storyMenu={modifiedStoryMenu}
+                    // react-virtual sizing props
+                    $height={pageSize.height}
+                    $width={pageSize.width}
+                    $translateX={
+                      (pageSize.width + GRID_SPACING.COLUMN_GAP) * columnIndex
+                    }
+                    $translateY={virtualRow.start}
+                  />
+                );
+              })}
+            </Fragment>
+          ))}
+        </CardGrid>
       </VirtualizedWrapper>
-      {/* {children} */}
+      {children}
     </ScrollableGutter>
   );
 };

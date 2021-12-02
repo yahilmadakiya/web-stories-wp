@@ -28,16 +28,16 @@ import { ThemeGlobals, themeHelpers } from '@web-stories-wp/design-system';
 import { PageSizePropType } from '../../types';
 import { GRID_SPACING } from '../../constants';
 
+/* display: grid; */
+/* grid-column-gap: ${GRID_SPACING.COLUMN_GAP}px;
+grid-row-gap: ${GRID_SPACING.ROW_GAP}px;
+grid-template-columns: ${({ columnWidth }) => `
+  repeat(auto-fill, ${columnWidth}px)`};
+grid-template-rows: ${({ columnHeight }) =>
+  `minmax(${columnHeight}px, auto)`};
+scroll-margin-top: 30vh; */
 const DashboardGrid = styled.div`
-  display: grid;
   width: 100%;
-  grid-column-gap: ${GRID_SPACING.COLUMN_GAP}px;
-  grid-row-gap: ${GRID_SPACING.ROW_GAP}px;
-  grid-template-columns: ${({ columnWidth }) => `
-    repeat(auto-fill, ${columnWidth}px)`};
-  grid-template-rows: ${({ columnHeight }) =>
-    `minmax(${columnHeight}px, auto)`};
-  scroll-margin-top: 30vh;
 
   ${({ theme }) => css`
     &.${ThemeGlobals.FOCUS_VISIBLE_SELECTOR} {
@@ -65,8 +65,8 @@ const CardGrid = forwardRef(function CardGrid(
       // eslint-disable-next-line styled-components-a11y/no-noninteractive-tabindex
       tabIndex={0}
       aria-label={ariaLabel}
-      columnWidth={pageSize.width}
-      columnHeight={pageSize.height}
+      // columnWidth={pageSize.width}
+      // columnHeight={pageSize.height}
     >
       {children}
     </DashboardGrid>
