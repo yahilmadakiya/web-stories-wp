@@ -271,5 +271,6 @@
       "github-actions",
       "imgbot"
     ]
-  }
+  },
+  "version": "0.1.202112061836"
 }
